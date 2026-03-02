@@ -3,1330 +3,652 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spendrics — Social Intelligence Platform</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Bricolage+Grotesque:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Spendrics — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
-/* ─── Reset & Tokens ─────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c056d;--bg2:#07044e;--sf:rgba(255,255,255,.05);--sf2:rgba(255,255,255,.08);
+  --br:rgba(255,255,255,.1);--br2:rgba(255,255,255,.2);
+  --ink:#fff;--ink2:rgba(255,255,255,.7);--ink3:rgba(255,255,255,.4);
+  --red:#ef4136;--orange:#fbb040;--yellow:#ffde5a;
+  --grad:linear-gradient(135deg,#ef4136,#fbb040);
+  --success:#4af0c8;--danger:#ff6b6b;--info:#60a5fa;
+  --r:10px;--rs:7px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var(--ink);display:flex}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
 
-:root {
-  --bg:        #07080c;
-  --bg2:       #0c0e15;
-  --surface:   #111420;
-  --surface2:  #161927;
-  --border:    #1f2436;
-  --border2:   #2a2f45;
-
-  --ink:       #eef0f7;
-  --ink2:      #9ca3be;
-  --ink3:      #545d7a;
-
-  --lime:      #c6f135;
-  --lime-dim:  rgba(198,241,53,0.12);
-  --lime-glow: rgba(198,241,53,0.25);
-
-  --blue:      #4f8ef7;
-  --pink:      #f74f8e;
-  --amber:     #f7c24f;
-  --teal:      #4ff7c2;
-  --danger:    #f74f4f;
-
-  --radius:    12px;
-  --radius-sm: 7px;
-
-  font-size: 14px;
-}
-
-html, body { height: 100%; }
-body {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  display: flex;
-  overflow: hidden;
-}
-
-/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-/* ─── Sidebar ─────────────────────────────────────────────────────────────  */
-.sidebar {
-  width: 260px;
-  flex-shrink: 0;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow-y: auto;
-  position: relative;
-  z-index: 10;
-}
-
-.sidebar-logo {
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid var(--border);
-}
-.logo-mark {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
-}
-.logo-icon {
-  width: 32px; height: 32px;
-  background: var(--lime);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 900; color: #000; letter-spacing: -1px;
-}
-.logo-text {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  color: var(--ink);
-}
-.logo-text span { color: var(--lime); }
-.logo-domain {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--ink3);
-  letter-spacing: 0.5px;
-  padding-left: 42px;
-}
-
-/* Brand Switcher */
-.brand-section {
-  padding: 16px 12px;
-  border-bottom: 1px solid var(--border);
-}
-.section-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: var(--ink3);
-  text-transform: uppercase;
-  padding: 0 8px;
-  margin-bottom: 8px;
-}
-.brand-list { display: flex; flex-direction: column; gap: 2px; }
-
-.brand-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.15s;
-  border: 1px solid transparent;
-  position: relative;
-}
-.brand-item:hover { background: var(--surface); }
-.brand-item.active {
-  background: var(--surface2);
-  border-color: var(--border2);
-}
-.brand-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 50%; transform: translateY(-50%);
-  width: 3px; height: 60%;
-  background: var(--lime);
-  border-radius: 0 2px 2px 0;
-}
-
-.brand-avatar {
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700;
-  flex-shrink: 0;
-}
-.brand-info { flex: 1; min-width: 0; }
-.brand-name {
-  font-size: 13px; font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.brand-handle {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px; color: var(--ink3);
-}
-.brand-hype {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--lime);
-}
-
-/* Add brand button */
-.add-brand-btn {
-  display: flex; align-items: center; gap: 8px;
-  padding: 9px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  border: 1px dashed var(--border2);
-  color: var(--ink3);
-  font-size: 12px;
-  transition: all 0.15s;
-  margin-top: 4px;
-  background: transparent;
-  width: 100%;
-  font-family: 'Bricolage Grotesque', sans-serif;
-}
-.add-brand-btn:hover { border-color: var(--lime); color: var(--lime); }
-
-/* Sidebar Nav */
-.sidebar-nav {
-  padding: 12px;
-  flex: 1;
-}
-.nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  color: var(--ink3);
-  font-size: 13px;
-  transition: all 0.15s;
-}
-.nav-item:hover { background: var(--surface); color: var(--ink); }
-.nav-item.active { background: var(--lime-dim); color: var(--lime); }
-.nav-icon { font-size: 14px; width: 20px; text-align: center; }
-
-/* Sidebar footer */
-.sidebar-footer {
-  padding: 12px;
-  border-top: 1px solid var(--border);
-}
-.user-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-.user-row:hover { background: var(--surface); }
-.user-avatar {
-  width: 28px; height: 28px;
-  background: linear-gradient(135deg, var(--blue), var(--pink));
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: #fff;
-}
-.user-name { font-size: 12px; font-weight: 600; color: var(--ink); }
-.user-plan {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px; color: var(--lime);
-}
-
-/* ─── Main Content ───────────────────────────────────────────────────────── */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* Top Bar */
-.topbar {
-  padding: 0 28px;
-  height: 60px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  background: var(--bg2);
-}
-.topbar-left {
-  display: flex; align-items: center; gap: 16px;
-}
-.current-brand-pill {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 20px;
-  padding: 6px 14px 6px 8px;
-}
-.pill-avatar {
-  width: 22px; height: 22px;
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700;
-}
-.pill-name { font-size: 13px; font-weight: 600; color: var(--ink); }
-
-.period-tabs {
-  display: flex; gap: 2px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 3px;
-}
-.tab-btn {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  padding: 5px 14px;
-  border-radius: 5px;
-  cursor: pointer;
-  color: var(--ink3);
-  transition: all 0.15s;
-  border: none; background: transparent;
-}
-.tab-btn.active { background: var(--lime); color: #000; font-weight: 700; }
-.tab-btn:hover:not(.active) { color: var(--ink); }
-
-.topbar-right {
-  display: flex; align-items: center; gap: 12px;
-}
-.live-pill {
-  display: flex; align-items: center; gap: 6px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--lime);
-  background: var(--lime-dim);
-  border: 1px solid var(--lime-glow);
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-.live-dot {
-  width: 6px; height: 6px;
-  background: var(--lime);
-  border-radius: 50%;
-  animation: blink 1.4s ease-in-out infinite;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-.ts-chip {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--ink3);
-}
-.icon-btn {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  color: var(--ink3);
-  transition: all 0.15s;
-}
-.icon-btn:hover { border-color: var(--border2); color: var(--ink); }
-
-/* ─── Dashboard Body ─────────────────────────────────────────────────────── */
-.dashboard-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* ─── Hype Hero Row ──────────────────────────────────────────────────────── */
-.hero-row {
-  display: grid;
-  grid-template-columns: 280px 1fr 1fr 1fr;
-  gap: 12px;
-}
-
-.hype-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-}
-.hype-card.featured {
-  border-color: var(--lime-glow);
-  background: linear-gradient(135deg, var(--surface) 60%, rgba(198,241,53,0.04));
-}
-.hype-card.featured::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--lime), transparent);
-}
-
-.card-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: var(--ink3);
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-.hype-number {
-  font-size: 64px;
-  font-weight: 800;
-  letter-spacing: -4px;
-  line-height: 1;
-  color: var(--lime);
-  transition: color 0.4s;
-}
-.hype-number.warn  { color: var(--amber); }
-.hype-number.hot   { color: #ff8c35; }
-.hype-number.viral { color: var(--pink); animation: viralPulse 1.2s ease-in-out infinite alternate; }
-@keyframes viralPulse {
-  from { text-shadow: 0 0 30px rgba(247,79,142,0.4); }
-  to   { text-shadow: 0 0 70px rgba(247,79,142,0.8), 0 0 120px rgba(247,79,142,0.3); }
-}
-
-.hype-bar-track {
-  width: 100%; height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  margin-top: 14px;
-  overflow: hidden;
-}
-.hype-bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--blue) 0%, var(--lime) 60%, var(--pink) 100%);
-  transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1);
-}
-.hype-status-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  margin-top: 10px;
-  font-size: 11px; font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: var(--lime-dim);
-  color: var(--lime);
-  border: 1px solid var(--lime-glow);
-}
-
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-}
-.stat-number {
-  font-size: 34px;
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  color: var(--ink);
-  line-height: 1;
-}
-.stat-sub {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--ink3);
-  margin-top: 6px;
-}
-.stat-delta {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  margin-top: 10px;
-  padding: 3px 8px;
-  border-radius: 4px;
-}
-.delta-up   { color: var(--lime); background: var(--lime-dim); }
-.delta-down { color: var(--danger); background: rgba(247,79,79,0.08); }
-
-/* ─── KPI Row ────────────────────────────────────────────────────────────── */
-.kpi-row {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-}
-.kpi-chip {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  transition: border-color 0.2s;
-}
-.kpi-chip:hover { border-color: var(--border2); }
-.kpi-chip-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px; letter-spacing: 1.5px;
-  color: var(--ink3); text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.kpi-chip-val {
-  font-size: 24px; font-weight: 800;
-  letter-spacing: -1px; line-height: 1;
-  color: var(--ink);
-}
-.kpi-chip-sub {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px; color: var(--ink3); margin-top: 4px;
-}
-
-/* ─── Middle Row ─────────────────────────────────────────────────────────── */
-.middle-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1.2fr;
-  gap: 12px;
-}
-
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-}
-.panel-title {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px; letter-spacing: 2px;
-  color: var(--ink3); text-transform: uppercase;
-  margin-bottom: 16px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-
-/* Sentiment bars */
-.sent-row {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 10px;
-}
-.sent-lbl { font-family:'DM Mono',monospace; font-size:10px; color:var(--ink3); width:55px; }
-.sent-track { flex:1; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
-.sent-fill { height:100%; border-radius:3px; transition: width 0.8s ease; }
-.sent-fill.pos { background: var(--lime); }
-.sent-fill.neu { background: var(--ink3); }
-.sent-fill.neg { background: var(--danger); }
-.sent-pct { font-family:'DM Mono',monospace; font-size:10px; color:var(--ink); width:30px; text-align:right; }
-
-/* Platform bars */
-.plat-row {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 9px;
-}
-.plat-icon { font-size:13px; width:18px; text-align:center; }
-.plat-name { font-size:11px; font-weight:500; color:var(--ink2); width:70px; }
-.plat-track { flex:1; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
-.plat-fill  { height:100%; border-radius:2px; transition: width 0.8s ease; }
-.plat-count { font-family:'DM Mono',monospace; font-size:10px; color:var(--ink3); width:36px; text-align:right; }
-
-/* Alerts */
-.alert-item {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  margin-bottom: 7px;
-  font-size: 12px;
-  line-height: 1.4;
-  animation: fadeSlide 0.3s ease;
-}
-@keyframes fadeSlide { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
-.alert-item.hype   { background:rgba(198,241,53,0.06); border:1px solid rgba(198,241,53,0.2); color:var(--lime); }
-.alert-item.warn   { background:rgba(247,194,79,0.06); border:1px solid rgba(247,194,79,0.2); color:var(--amber); }
-.alert-item.danger { background:rgba(247,79,79,0.06);  border:1px solid rgba(247,79,79,0.2);  color:var(--danger); }
-.alert-item.info   { background:rgba(79,142,247,0.06); border:1px solid rgba(79,142,247,0.2); color:var(--blue); }
-.alert-time { font-family:'DM Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; }
-
-/* ─── Bottom Row ─────────────────────────────────────────────────────────── */
-.bottom-row {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: 12px;
-}
-
-/* Top Posts */
-.post-item {
-  display: flex; gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-  align-items: flex-start;
-}
-.post-item:last-child { border-bottom: none; padding-bottom: 0; }
-.post-platform-badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px; padding: 3px 7px;
-  border-radius: 4px; font-weight: 500;
-  white-space: nowrap; flex-shrink: 0; margin-top: 2px;
-}
-.pb-twitter   { background:rgba(79,142,247,0.12); color:var(--blue); }
-.pb-tiktok    { background:rgba(247,79,142,0.12); color:var(--pink); }
-.pb-youtube   { background:rgba(247,79,79,0.12);  color:#f97575; }
-.pb-reddit    { background:rgba(247,142,79,0.12); color:#f79a5f; }
-.pb-linkedin  { background:rgba(79,198,247,0.12); color:var(--teal); }
-.pb-instagram { background:rgba(198,79,247,0.12); color:#c466f7; }
-
-.post-content-text {
-  font-size: 12px; color: var(--ink2); line-height: 1.5;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.post-stats {
-  display: flex; gap: 12px; margin-top: 6px;
-}
-.post-stat-item {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px; color: var(--ink3);
-}
-.viral-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px; padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(247,79,142,0.12); color: var(--pink);
-  border: 1px solid rgba(247,79,142,0.2);
-}
-
-/* AI Insight */
-.ai-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-}
-.ai-panel::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--blue), var(--pink), var(--lime));
-}
-.ai-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
-  color: var(--blue); background: rgba(79,142,247,0.1);
-  border: 1px solid rgba(79,142,247,0.25);
-  padding: 4px 10px; border-radius: 4px;
-  margin-bottom: 14px; width: fit-content;
-}
-.ai-text {
-  font-size: 12px; line-height: 1.7; color: var(--ink2);
-  white-space: pre-line; flex: 1; overflow-y: auto;
-}
-.ai-action-btn {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  margin-top: 14px;
-  padding: 9px;
-  background: var(--lime-dim); border: 1px solid var(--lime-glow);
-  border-radius: var(--radius-sm);
-  color: var(--lime); font-size: 12px; font-weight: 600;
-  cursor: pointer; transition: all 0.15s;
-}
-.ai-action-btn:hover { background: var(--lime); color: #000; }
-
-/* ─── Multi-Brand Comparison Bar ─────────────────────────────────────────── */
-.comparison-bar {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.comp-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px; letter-spacing: 2px; color: var(--ink3); text-transform: uppercase;
-  white-space: nowrap;
-}
-.comp-brands {
-  display: flex; gap: 8px; flex: 1; flex-wrap: wrap;
-}
-.comp-brand-chip {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid var(--border2);
-  background: var(--surface2);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.comp-brand-chip:hover { border-color: var(--lime-glow); }
-.comp-brand-chip.active { border-color: var(--lime-glow); background: var(--lime-dim); }
-.comp-chip-avatar {
-  width: 18px; height: 18px; border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px; font-weight: 700;
-}
-.comp-chip-name { font-size: 11px; font-weight: 600; color: var(--ink); }
-.comp-chip-score { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--lime); }
-
-/* ─── Add Brand Modal ────────────────────────────────────────────────────── */
-.modal-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-  z-index: 100;
-  align-items: center; justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: 16px;
-  padding: 28px;
-  width: 420px;
-  animation: modalIn 0.2s ease;
-}
-@keyframes modalIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:none} }
-.modal-title {
-  font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 4px;
-}
-.modal-sub { font-size: 12px; color: var(--ink3); margin-bottom: 24px; }
-.form-field { margin-bottom: 16px; }
-.form-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px; letter-spacing: 1.5px; color: var(--ink3);
-  text-transform: uppercase; display: block; margin-bottom: 6px;
-}
-.form-input {
-  width: 100%; padding: 10px 14px;
-  background: var(--surface); border: 1px solid var(--border2);
-  border-radius: var(--radius-sm); color: var(--ink);
-  font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px;
-  outline: none; transition: border-color 0.15s;
-}
-.form-input:focus { border-color: var(--lime); }
-.form-input::placeholder { color: var(--ink3); }
-.color-picker-row {
-  display: flex; gap: 8px; flex-wrap: wrap;
-}
-.color-dot {
-  width: 24px; height: 24px; border-radius: 50%;
-  cursor: pointer; transition: transform 0.15s;
-  border: 2px solid transparent;
-}
-.color-dot:hover { transform: scale(1.2); }
-.color-dot.selected { border-color: var(--ink); }
-.modal-actions { display: flex; gap: 8px; margin-top: 8px; }
-.btn-primary {
-  flex: 1; padding: 10px;
-  background: var(--lime); color: #000; font-weight: 700; font-size: 13px;
-  border: none; border-radius: var(--radius-sm); cursor: pointer;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  transition: opacity 0.15s;
-}
-.btn-primary:hover { opacity: 0.85; }
-.btn-ghost {
-  padding: 10px 16px;
-  background: transparent; color: var(--ink3);
-  border: 1px solid var(--border2); border-radius: var(--radius-sm);
-  cursor: pointer; font-size: 13px;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  transition: all 0.15s;
-}
-.btn-ghost:hover { border-color: var(--border); color: var(--ink); }
-
-/* ─── Empty State ─────────────────────────────────────────────────────────  */
-.empty-state {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 48px 24px; text-align: center; gap: 12px;
-}
-.empty-icon { font-size: 36px; }
-.empty-title { font-size: 16px; font-weight: 700; color: var(--ink); }
-.empty-sub { font-size: 12px; color: var(--ink3); max-width: 260px; line-height: 1.6; }
-
-/* ─── Responsive ─────────────────────────────────────────────────────────── */
-@media (max-width: 1200px) {
-  .hero-row { grid-template-columns: 240px 1fr 1fr; }
-  .hero-row > .stat-card:last-child { display: none; }
-  .kpi-row { grid-template-columns: repeat(3,1fr); }
-}
-@media (max-width: 900px) {
-  .sidebar { display: none; }
-  .middle-row { grid-template-columns: 1fr; }
-  .bottom-row { grid-template-columns: 1fr; }
-  .hero-row { grid-template-columns: 1fr 1fr; }
-}
+/* SIDEBAR */
+.sb{width:256px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--br);display:flex;flex-direction:column;height:100vh;overflow-y:auto;position:relative;z-index:1}
+.sb::-webkit-scrollbar{width:0}
+.sb-logo{padding:16px;border-bottom:1px solid var(--br)}
+.sb-logo img,.sb-logo svg{display:block;max-height:36px;width:auto}
+.sb-domain{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:4px;letter-spacing:.5px}
+.sb-sec{padding:8px 10px 4px}
+.sb-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;padding:0 8px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between}
+.sb-lbl-btn{background:transparent;border:none;cursor:pointer;color:var(--ink3);font-size:18px;line-height:1;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .15s}
+.sb-lbl-btn:hover{color:var(--orange);background:rgba(251,176,64,.1)}
+.nav-i{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--rs);cursor:pointer;color:var(--ink3);font-size:13px;font-weight:500;transition:all .15s;border:1px solid transparent;position:relative;user-select:none}
+.nav-i:hover{background:var(--sf);color:var(--ink)}
+.nav-i.on{background:rgba(251,176,64,.08);color:var(--orange);border-color:rgba(251,176,64,.15)}
+.nav-i.on::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:55%;background:var(--orange);border-radius:0 2px 2px 0}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.nav-bdg{margin-left:auto;font-family:'DM Mono',monospace;font-size:9px;background:rgba(255,107,107,.12);color:var(--danger);padding:2px 6px;border-radius:4px}
+.ti{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--rs);cursor:pointer;border:1px solid transparent;transition:all .15s;position:relative}
+.ti:hover{background:var(--sf)}
+.ti.on{background:var(--sf2);border-color:var(--br)}
+.ti.on::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:55%;background:var(--orange);border-radius:0 2px 2px 0}
+.ti-av{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.ti-info{flex:1;min-width:0}
+.ti-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ti-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:1px}
+.ti-acts{display:flex;gap:2px;flex-shrink:0}
+.ti-btn{width:20px;height:20px;border-radius:4px;border:1px solid transparent;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--ink3);transition:all .15s}
+.ti-btn:hover{color:var(--ink);border-color:var(--br)}
+.ti-btn.del:hover{color:var(--danger);border-color:rgba(255,107,107,.3)}
+.add-ti{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:var(--rs);cursor:pointer;border:1px dashed rgba(255,255,255,.15);color:var(--ink3);font-size:12px;font-weight:500;transition:all .15s;background:transparent;width:100%;font-family:inherit;margin-top:4px}
+.add-ti:hover{border-color:var(--orange);color:var(--orange)}
+.sb-foot{padding:8px 10px;border-top:1px solid var(--br);margin-top:auto}
+.u-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--rs);cursor:pointer;transition:background .15s}
+.u-row:hover{background:var(--sf)}
+.u-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;background:var(--grad)}
+.u-name{font-size:12px;font-weight:700}
+.u-plan{font-family:'DM Mono',monospace;font-size:9px;color:var(--orange)}
+.u-logout{display:flex;align-items:center;gap:8px;padding:6px 10px;color:var(--ink3);font-size:12px;cursor:pointer;border-radius:var(--rs);transition:all .15s;background:transparent;border:none;width:100%;font-family:inherit;margin-top:2px}
+.u-logout:hover{background:rgba(255,107,107,.08);color:var(--danger)}
+.main{flex:1;height:100vh;overflow:hidden;display:flex;flex-direction:column;position:relative;z-index:1}
+.topbar{height:54px;border-bottom:1px solid var(--br);padding:0 22px;display:flex;align-items:center;justify-content:space-between;background:var(--bg2);flex-shrink:0}
+.tb-l{display:flex;align-items:center;gap:12px}
+.ctx-pill{display:flex;align-items:center;gap:7px;background:var(--sf);border:1px solid var(--br);border-radius:20px;padding:4px 14px 4px 8px;font-size:12px;font-weight:700}
+.ptabs{display:flex;gap:2px;background:var(--sf);border:1px solid var(--br);border-radius:8px;padding:3px}
+.pt{font-family:'DM Mono',monospace;font-size:11px;padding:4px 12px;border-radius:5px;cursor:pointer;color:var(--ink3);transition:all .15s;border:none;background:transparent}
+.pt.on{background:var(--grad);color:#fff;font-weight:700}
+.pt:hover:not(.on){color:var(--ink)}
+.tb-r{display:flex;align-items:center;gap:8px}
+.live-pill{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:10px;color:var(--success);background:rgba(74,240,200,.08);border:1px solid rgba(74,240,200,.2);padding:3px 9px;border-radius:20px}
+.live-dot{width:5px;height:5px;background:var(--success);border-radius:50%;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.ts-el{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)}
+.ib{width:30px;height:30px;border-radius:var(--rs);background:var(--sf);border:1px solid var(--br);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--ink3);transition:all .15s}
+.ib:hover{border-color:var(--br2);color:var(--ink)}
+.pages{flex:1;overflow-y:auto}
+.pg{display:none;padding:20px;animation:pgIn .2s ease}
+.pg.on{display:block}
+@keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:rgba(255,255,255,.04);border:1px solid var(--br);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;transition:border-color .2s}
+.kpi:hover{border-color:var(--br2)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:.5}
+.kpi-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin-bottom:8px}
+.kpi-val{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1}
+.kpi-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:5px}
+.card{background:rgba(255,255,255,.04);border:1px solid var(--br);border-radius:var(--r);padding:18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.grid-65{display:grid;grid-template-columns:65fr 35fr;gap:12px;margin-bottom:14px}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sec-ttl{font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px;color:var(--ink2)}
+.sec-dot{width:6px;height:6px;border-radius:50%;background:var(--grad)}
+.btn-sm{font-family:'DM Mono',monospace;font-size:10px;padding:5px 12px;border-radius:6px;cursor:pointer;border:1px solid var(--br);background:transparent;color:var(--ink3);transition:all .15s}
+.btn-sm:hover{border-color:var(--orange);color:var(--orange)}
+.btn-sm.primary{background:var(--grad);border:none;color:#fff;font-weight:600}
+.btn-sm.primary:hover{opacity:.9}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid var(--br)}
+.tbl td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
+.plat-badge{display:inline-flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04)}
+.act-btn{width:22px;height:22px;border-radius:4px;border:1px solid transparent;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--ink3);transition:all .15s}
+.act-btn:hover{border-color:var(--br);color:var(--ink)}
+.act-btn.del:hover{color:var(--danger);border-color:rgba(255,107,107,.3)}
+.sent-bar{display:flex;flex-direction:column;gap:9px}
+.sent-row{display:flex;align-items:center;gap:10px}
+.sent-lbl{width:56px;font-size:11px;color:var(--ink2)}
+.sent-track{flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.sent-fill{height:100%;border-radius:3px;transition:width .8s}
+.sent-fill.pos{background:var(--success)}
+.sent-fill.neu{background:rgba(255,255,255,.3)}
+.sent-fill.neg{background:var(--danger)}
+.sent-pct{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);width:32px;text-align:right}
+.plat-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.plat-row:last-child{border-bottom:none}
+.plat-name{font-size:12px;display:flex;align-items:center;gap:8px}
+.plat-vals{display:flex;gap:12px;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink2)}
+.alert-item{display:flex;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--br);background:rgba(255,255,255,.02);margin-bottom:8px}
+.alert-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.alert-dot.info{background:var(--info)}
+.alert-dot.warn{background:var(--orange)}
+.alert-dot.danger{background:var(--danger)}
+.alert-text{font-size:12px;color:var(--ink2);line-height:1.5}
+.alert-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:3px}
+.score-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.score-row:last-child{border-bottom:none}
+.score-lbl{font-size:11px;color:var(--ink2);flex:1}
+.score-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:2px;background:var(--grad);transition:width .8s}
+.score-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--orange);width:26px;text-align:right}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:#07044e;border:1px solid var(--br2);border-radius:16px;padding:28px;width:420px;max-width:90vw;transform:translateY(12px);transition:transform .2s}
+.modal-overlay.open .modal{transform:none}
+.modal-ttl{font-size:18px;font-weight:800;margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:6px}
+.field input,.field select{width:100%;padding:10px 14px;background:rgba(255,255,255,.06);border:1px solid var(--br);border-radius:8px;color:var(--ink);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--orange)}
+.field select option{background:#07044e}
+.modal-acts{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.btn-cancel{font-family:'DM Mono',monospace;font-size:11px;padding:8px 16px;border-radius:7px;cursor:pointer;border:1px solid var(--br);background:transparent;color:var(--ink3);transition:all .15s}
+.btn-cancel:hover{color:var(--ink)}
+.btn-save{font-family:'DM Mono',monospace;font-size:11px;padding:8px 16px;border-radius:7px;cursor:pointer;border:none;background:var(--grad);color:#fff;font-weight:700;transition:opacity .15s}
+.btn-save:hover{opacity:.85}
+.empty{text-align:center;padding:48px 20px;color:var(--ink3)}
+.empty-icon{font-size:36px;margin-bottom:12px}
+.empty-txt{font-size:13px}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════ SIDEBAR ═══════ -->
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-mark">
-      <div class="logo-icon">S</div>
-      <div class="logo-text">spend<span>rics</span></div>
+<aside class="sb">
+  <div class="sb-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="140" height="36" viewBox="0 0 3176.75 875.72">
+      <g transform="scale(8.84) translate(10,10)">
+        <defs>
+          <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ef4136"/><stop offset="1" stop-color="#fbb040"/></linearGradient>
+          <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ef4136"/><stop offset="1" stop-color="#fbb040"/></linearGradient>
+        </defs>
+        <g transform="matrix(0.796,0,0,0.796,2.35,8.15)" fill="url(#lg1)">
+          <g transform="translate(0,-952.36218)">
+            <path d="m 13.6466,963.5064 a 2.9899285,2.9935637 0 0 0 -1.775092,5.11349 l 25.816696,25.84809 -12.737067,0 a 2.9899285,2.9935637 0 1 0 0,5.98652 l 19.930863,0 a 2.9899285,2.9935637 0 0 0 2.98963,-2.99326 l 0,-19.95509 a 2.9899285,2.9935637 0 0 0 -3.020772,-3.05563 2.9899285,2.9935637 0 0 0 -2.958487,3.05563 l 0,12.72137 -25.785555,-25.81691 A 2.9899285,2.9935637 0 0 0 13.6466,963.5064 z m 71.751109,0 a 2.9899285,2.9935637 0 0 0 -1.775093,0.90421 l -25.785554,25.81691 0,-12.72137 a 2.9899285,2.9935637 0 0 0 -3.020772,-3.05563 2.9899285,2.9935637 0 0 0 -2.958487,3.05563 l 0,19.95509 a 2.9899285,2.9935637 0 0 0 2.989629,2.99326 l 19.930864,0 a 2.9899285,2.9935637 0 1 0 0,-5.98652 l -12.737068,0 25.816697,-25.84809 a 2.9899285,2.9935637 0 0 0 -2.460216,-5.11349 z m -60.757992,40.9391 a 2.9936818,2.9973215 0 1 0 0.31142,5.9866 l 12.705925,0 -25.785554,25.8169 a 2.9899285,2.9935637 0 1 0 4.235308,4.2092 l 25.785555,-25.8169 0,12.7526 a 2.9899285,2.9935637 0 1 0 5.979259,0 l 0,-19.9551 a 2.9899285,2.9935637 0 0 0 -2.98963,-2.9933 l -19.930863,0 a 2.9899285,2.9935637 0 0 0 -0.31142,0 z m 29.896295,0 a 2.9899285,2.9935637 0 0 0 -2.678209,2.9933 l 0,19.9551 a 2.9899285,2.9935637 0 1 0 5.979259,0 l 0,-12.7526 25.785554,25.8169 a 2.9899285,2.9935637 0 1 0 4.235309,-4.2092 l -25.785555,-25.8169 12.705926,0 a 2.9899285,2.9935637 0 1 0 0,-5.9866 l -19.930864,0 a 2.9899285,2.9935637 0 0 0 -0.31142,0 z"/>
+          </g>
+        </g>
+        <g transform="matrix(2.658,0,0,2.658,80.56,9.64)" fill="url(#lg2)">
+          <path d="M0.54 19.7 l0 -2.82 c0.24 0.06 0.54 0.12 0.88 0.16 c0.34 0.06 0.7 0.1 1.08 0.12 s0.76 0.04 1.16 0.06 s0.78 0.04 1.12 0.04 c0.94 0 1.6 -0.06 2 -0.16 c0.38 -0.1 0.58 -0.28 0.58 -0.56 c0 -0.24 -0.18 -0.42 -0.36 -0.56 c-0.66 -0.44 -1.44 -0.62 -2.22 -0.8 c-2.2 -0.44 -4.22 -1.32 -4.22 -3.84 c0 -2.98 2.82 -3.68 5.24 -3.68 c1.34 0 2.7 0.14 4 0.46 l0 2.82 c-0.2 -0.06 -0.46 -0.1 -0.78 -0.16 c-0.34 -0.04 -0.68 -0.08 -1.06 -0.12 c-0.78 -0.08 -1.52 -0.12 -2.3 -0.12 c-0.44 0 -1.36 0 -1.78 0.16 c-0.28 0.1 -0.46 0.22 -0.46 0.54 c0 0.16 0.04 0.3 0.12 0.42 c0.08 0.14 0.22 0.24 0.4 0.34 c0.54 0.3 1.24 0.48 1.84 0.62 c0.5 0.12 1 0.26 1.52 0.4 c1.76 0.48 2.92 1.46 2.92 3.34 c0 3.1 -3.08 3.76 -5.56 3.76 c-1.36 0 -2.78 -0.1 -4.12 -0.42 z M11.88 20 l0 -12.24 l5.8 0 c2.28 0 4.22 1.72 4.22 4.02 c0 2.32 -2 4.02 -4.22 4.02 l-2.8 0 l0 4.2 l-3 0 z M17.68 10.54 l-2.8 0 l0 2.48 l2.8 0 c0.7 0 1.22 -0.54 1.22 -1.24 s-0.52 -1.24 -1.22 -1.24 z M23.4 7.76 l9.1 0 l0 2.78 l-6.1 0 l0 1.96 l4.9 0 l0 2.78 l-4.9 0 l0 1.94 l6.1 0 l0 2.78 l-9.1 0 l0 -12.24 z M42 7.76 l3 0 l0 12.24 l-3 0 l-4.8 -7.16 l0 7.16 l-3 0 l0 -12.24 l3 0 l4.8 7.16 l0 -7.16 z M51.6 20 l-4.3 0 l0 -12.24 l4.3 0 c3.74 0 6.3 2.44 6.3 6.12 c0 3.78 -2.7 6.12 -6.3 6.12 z M50.3 10.54 l0 6.68 l1.3 0 c2.12 0 3.3 -1.34 3.3 -3.34 c0 -0.46 -0.06 -0.88 -0.18 -1.3 c-0.52 -1.46 -1.66 -2.04 -3.12 -2.04 l-1.3 0 z"/>
+        </g>
+        <g transform="matrix(2.653,0,0,2.653,235.97,9.67)" fill="#ffde5a">
+          <path d="M4.14 10.58 l0 2.92 l2.8 0 c0.92 0 1.46 -0.54 1.46 -1.46 s-0.54 -1.46 -1.46 -1.46 l-2.8 0 z M8.68 15.48 c0.56 0.76 1.12 1.52 1.7 2.26 c0.56 0.74 1.12 1.5 1.68 2.26 l-3.66 0 c-0.72 -0.96 -1.42 -1.92 -2.12 -2.88 c-0.7 -0.94 -1.42 -1.9 -2.14 -2.86 l0 5.74 l-3 0 l0 -12.24 l5.8 0 c2.28 0 4.22 1.74 4.22 4.04 c0 1.62 -1 3.04 -2.48 3.68 z M13.3 7.76 l3 0 l0 12.24 l-3 0 l0 -12.24 z M28.18 16.58 l0 3.08 c-1.24 0.34 -2.48 0.48 -3.76 0.48 c-3.76 0 -6.28 -2.58 -6.28 -6.24 c0 -3.76 2.62 -6.24 6.26 -6.24 c1.26 0 2.58 0.1 3.78 0.48 l0 3.08 c-0.98 -0.48 -2.52 -0.66 -3.6 -0.66 c-2.44 0 -3.44 1 -3.44 3.32 c0 2.46 1.18 3.36 3.46 3.36 c1.02 0 2.68 -0.16 3.58 -0.66 z M29.32 19.7 l0 -2.82 c0.24 0.06 0.54 0.12 0.88 0.16 c0.34 0.06 0.7 0.1 1.08 0.12 s0.76 0.04 1.16 0.06 s0.78 0.04 1.12 0.04 c0.94 0 1.6 -0.06 2 -0.16 c0.38 -0.1 0.58 -0.28 0.58 -0.56 c0 -0.24 -0.18 -0.42 -0.36 -0.56 c-0.66 -0.44 -1.44 -0.62 -2.22 -0.8 c-2.2 -0.44 -4.22 -1.32 -4.22 -3.84 c0 -2.98 2.82 -3.68 5.24 -3.68 c1.34 0 2.7 0.14 4 0.46 l0 2.82 c-0.2 -0.06 -0.46 -0.1 -0.78 -0.16 c-0.34 -0.04 -0.68 -0.08 -1.06 -0.12 c-0.78 -0.08 -1.52 -0.12 -2.3 -0.12 c-0.44 0 -1.36 0 -1.78 0.16 c-0.28 0.1 -0.46 0.22 -0.46 0.54 c0 0.16 0.04 0.3 0.12 0.42 c0.08 0.14 0.22 0.24 0.4 0.34 c0.54 0.3 1.24 0.48 1.84 0.62 c0.5 0.12 1 0.26 1.52 0.4 c1.76 0.48 2.92 1.46 2.92 3.34 c0 3.1 -3.08 3.76 -5.56 3.76 c-1.36 0 -2.78 -0.1 -4.12 -0.42 z"/>
+        </g>
+      </g>
+    </svg>
+    <div class="sb-domain">spendrics.com</div>
+  </div>
+
+  <div class="sb-sec">
+    <div class="sb-lbl">Tracked Brands
+      <button class="sb-lbl-btn" onclick="openModal('brand')" title="Add brand">+</button>
     </div>
-    <div class="logo-domain">spendrics.com</div>
+    <div id="brands-list"><div style="padding:8px 10px;font-size:11px;color:var(--ink3)">Loading…</div></div>
+    <button class="add-ti" onclick="openModal('brand')">+ Add Brand</button>
   </div>
 
-  <div class="brand-section">
-    <div class="section-label">Tracked Brands</div>
-    <div class="brand-list" id="brand-list"></div>
-    <button class="add-brand-btn" onclick="openModal()">
-      <span style="font-size:16px">＋</span>
-      Add Brand / Account
-    </button>
+  <div class="sb-sec">
+    <div class="sb-lbl">Influencers
+      <button class="sb-lbl-btn" onclick="openModal('influencer')" title="Add influencer">+</button>
+    </div>
+    <div id="influencers-list"><div style="padding:8px 10px;font-size:11px;color:var(--ink3)">Loading…</div></div>
+    <button class="add-ti" style="margin-top:4px" onclick="openModal('influencer')">+ Add Influencer</button>
   </div>
 
-  <nav class="sidebar-nav">
-    <div class="section-label" style="margin-top:4px">Navigation</div>
-    <div class="nav-item active"><span class="nav-icon">◈</span> Dashboard</div>
-    <div class="nav-item"><span class="nav-icon">⚡</span> Hype Monitor</div>
-    <div class="nav-item"><span class="nav-icon">📊</span> Analytics</div>
-    <div class="nav-item"><span class="nav-icon">🔔</span> Alerts</div>
-    <div class="nav-item"><span class="nav-icon">📝</span> Reports</div>
-    <div class="nav-item"><span class="nav-icon">⚙</span> Integrations</div>
-  </nav>
+  <div class="sb-sec" style="margin-top:8px">
+    <div class="sb-lbl">Navigation</div>
+    <div class="nav-i on" onclick="showPage('dashboard',this)"><span class="nav-icon">◈</span> Dashboard</div>
+    <div class="nav-i" onclick="showPage('brands',this)"><span class="nav-icon">⬡</span> Brands</div>
+    <div class="nav-i" onclick="showPage('influencers',this)"><span class="nav-icon">✦</span> Influencers</div>
+    <div class="nav-i" onclick="showPage('alerts',this)"><span class="nav-icon">⚡</span> Alerts <span class="nav-bdg" id="alert-count">—</span></div>
+  </div>
 
-  <div class="sidebar-footer">
-    <div class="user-row">
-      <div class="user-avatar">AY</div>
+  <div class="sb-foot">
+    <div class="u-row">
+      <div class="u-av" id="u-av">A</div>
       <div>
-        <div class="user-name">Ahmet Y.</div>
-        <div class="user-plan">PRO PLAN</div>
+        <div class="u-name" id="u-name">Loading…</div>
+        <div class="u-plan" id="u-plan">—</div>
       </div>
     </div>
+    <button class="u-logout" onclick="logout()">↩ Sign out</button>
   </div>
 </aside>
 
-<!-- ═══════════════════════════════════════════════════════ MAIN ══════════ -->
-<main class="main">
-
-  <!-- Top Bar -->
+<div class="main">
   <div class="topbar">
-    <div class="topbar-left">
-      <div class="current-brand-pill" id="current-brand-pill">
-        <div class="pill-avatar" id="pill-avatar" style="background:#c6f135"></div>
-        <span class="pill-name" id="pill-name">—</span>
-      </div>
-      <div class="period-tabs">
-        <button class="tab-btn active" onclick="switchPeriod('realtime',this)">⚡ Live</button>
-        <button class="tab-btn" onclick="switchPeriod('daily',this)">Daily</button>
-        <button class="tab-btn" onclick="switchPeriod('weekly',this)">Weekly</button>
+    <div class="tb-l">
+      <div class="ctx-pill"><span id="ctx-name">Select a brand</span></div>
+      <div class="ptabs">
+        <button class="pt on" onclick="setTab('live',this)">Live</button>
+        <button class="pt" onclick="setTab('daily',this)">Daily</button>
+        <button class="pt" onclick="setTab('weekly',this)">Weekly</button>
       </div>
     </div>
-    <div class="topbar-right">
+    <div class="tb-r">
       <div class="live-pill"><div class="live-dot"></div> LIVE</div>
-      <div class="ts-chip" id="ts-chip">—</div>
-      <div class="icon-btn" title="Refresh" onclick="renderDashboard()">↻</div>
-      <div class="icon-btn" title="Settings">⚙</div>
+      <div class="ts-el" id="ts-clock">—</div>
+      <div class="ib" onclick="refreshData()" title="Refresh">↻</div>
     </div>
   </div>
 
-  <!-- Dashboard Body -->
-  <div class="dashboard-body" id="dashboard-body">
-    <!-- populated by JS -->
-  </div>
-
-</main>
-
-<!-- ═══════════════════════════════════════════════════════ ADD BRAND MODAL -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <div class="modal-title">Add Brand / Account</div>
-    <div class="modal-sub">Track a new brand, product, or social account</div>
-
-    <div class="form-field">
-      <label class="form-label">Brand Name</label>
-      <input class="form-input" id="inp-name" type="text" placeholder="e.g. Unionion">
-    </div>
-    <div class="form-field">
-      <label class="form-label">Handle / Keyword</label>
-      <input class="form-input" id="inp-handle" type="text" placeholder="e.g. @unionion or #unionion">
-    </div>
-    <div class="form-field">
-      <label class="form-label">Brand Color</label>
-      <div class="color-picker-row" id="color-picker">
-        <div class="color-dot selected" style="background:#c6f135" data-color="#c6f135" onclick="selectColor(this)"></div>
-        <div class="color-dot" style="background:#4f8ef7" data-color="#4f8ef7" onclick="selectColor(this)"></div>
-        <div class="color-dot" style="background:#f74f8e" data-color="#f74f8e" onclick="selectColor(this)"></div>
-        <div class="color-dot" style="background:#f7c24f" data-color="#f7c24f" onclick="selectColor(this)"></div>
-        <div class="color-dot" style="background:#4ff7c2" data-color="#4ff7c2" onclick="selectColor(this)"></div>
-        <div class="color-dot" style="background:#a78bfa" data-color="#a78bfa" onclick="selectColor(this)"></div>
-        <div class="color-dot" style="background:#f97575" data-color="#f97575" onclick="selectColor(this)"></div>
-        <div class="color-dot" style="background:#fb923c" data-color="#fb923c" onclick="selectColor(this)"></div>
+  <div class="pages">
+    <div class="pg on" id="pg-dashboard">
+      <div id="dash-content">
+        <div class="empty"><div class="empty-icon">◈</div><div class="empty-txt">Select or add a brand to view dashboard</div></div>
       </div>
     </div>
 
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-primary" onclick="addBrand()">Track Brand →</button>
+    <div class="pg" id="pg-brands">
+      <div class="sec-hd">
+        <div class="sec-ttl"><div class="sec-dot"></div> All Brands</div>
+        <button class="btn-sm primary" onclick="openModal('brand')">+ Add Brand</button>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--br);border-radius:var(--r);overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th>Brand</th><th>Handle</th><th>Hype Score</th><th>Reach</th><th>Engagement</th><th>Actions</th></tr></thead>
+          <tbody id="brands-table-body"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="pg" id="pg-influencers">
+      <div class="sec-hd">
+        <div class="sec-ttl"><div class="sec-dot"></div> All Influencers</div>
+        <button class="btn-sm primary" onclick="openModal('influencer')">+ Add Influencer</button>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--br);border-radius:var(--r);overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Followers</th><th>Actions</th></tr></thead>
+          <tbody id="influencers-table-body"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink3)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="pg" id="pg-alerts">
+      <div class="sec-hd">
+        <div class="sec-ttl"><div class="sec-dot"></div> Alerts</div>
+        <button class="btn-sm" onclick="markAllRead()">Mark all read</button>
+      </div>
+      <div id="alerts-list"><div style="text-align:center;padding:32px;color:var(--ink3)">Loading…</div></div>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════════ SCRIPT ═══ -->
+<!-- Brand Modal -->
+<div class="modal-overlay" id="modal-brand">
+  <div class="modal">
+    <div class="modal-ttl" id="modal-brand-title">Add Brand</div>
+    <input type="hidden" id="brand-edit-id">
+    <div class="field"><label>Brand Name</label><input type="text" id="brand-name" placeholder="e.g. Nike"></div>
+    <div class="field"><label>Handle / Hashtag</label><input type="text" id="brand-handle" placeholder="e.g. @nike"></div>
+    <div class="field"><label>Color (hex)</label><input type="text" id="brand-color" placeholder="#ef4136"></div>
+    <div class="field"><label>Emoji</label><input type="text" id="brand-emoji" placeholder="🔥"></div>
+    <div class="modal-acts">
+      <button class="btn-cancel" onclick="closeModal('brand')">Cancel</button>
+      <button class="btn-save" onclick="saveBrand()">Save Brand</button>
+    </div>
+  </div>
+</div>
+
+<!-- Influencer Modal -->
+<div class="modal-overlay" id="modal-influencer">
+  <div class="modal">
+    <div class="modal-ttl" id="modal-inf-title">Add Influencer</div>
+    <input type="hidden" id="inf-edit-id">
+    <div class="field"><label>Brand</label><select id="inf-brand"><option value="">Select brand…</option></select></div>
+    <div class="field"><label>Name</label><input type="text" id="inf-name" placeholder="e.g. John Doe"></div>
+    <div class="field"><label>Handle</label><input type="text" id="inf-handle" placeholder="@johndoe"></div>
+    <div class="field"><label>Platform</label>
+      <select id="inf-platform">
+        <option value="instagram">Instagram</option>
+        <option value="tiktok">TikTok</option>
+        <option value="youtube">YouTube</option>
+        <option value="twitter">Twitter / X</option>
+        <option value="reddit">Reddit</option>
+      </select>
+    </div>
+    <div class="field"><label>Followers</label><input type="number" id="inf-followers" placeholder="100000"></div>
+    <div class="modal-acts">
+      <button class="btn-cancel" onclick="closeModal('influencer')">Cancel</button>
+      <button class="btn-save" onclick="saveInfluencer()">Save Influencer</button>
+    </div>
+  </div>
+</div>
+
 <script>
-/* ── State ──────────────────────────────────────────────────────────────── */
-let selectedBrandId = null;
-let selectedPeriod  = 'realtime';
-let selectedColor   = '#c6f135';
-let autoRefreshTimer = null;
+const API = 'https://spendrics-api.onrender.com/api/v1';
+let token = localStorage.getItem('spr_token');
+let session = JSON.parse(localStorage.getItem('spr_session') || 'null');
+let brands = [], influencers = [], alertsList = [];
+let currentBrandId = null;
+let currentTab = 'live';
 
-const BRAND_COLORS = [
-  '#c6f135','#4f8ef7','#f74f8e','#f7c24f','#4ff7c2','#a78bfa','#f97575','#fb923c'
-];
+if (!token || !session) window.location.href = 'login.html';
 
-/* ── Initial Brand Data ─────────────────────────────────────────────────── */
-const BRANDS = [
-  {
-    id: 'b1', name: 'Unionion', handle: '@unionion',
-    color: '#c6f135', emoji: 'U',
-    keywords: ['unionion','@unionion','#unionion'],
-  },
-  {
-    id: 'b2', name: 'Spendrics', handle: '@spendrics',
-    color: '#4f8ef7', emoji: 'S',
-    keywords: ['spendrics','@spendrics'],
-  },
-  {
-    id: 'b3', name: 'TechFlow', handle: '#techflow',
-    color: '#f74f8e', emoji: 'T',
-    keywords: ['techflow','#techflow'],
-  },
-];
+// Clock
+setInterval(() => {
+  document.getElementById('ts-clock').textContent = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}, 1000);
 
-/* ── Data Generation ─────────────────────────────────────────────────────  */
-function genData(brandId, period) {
-  const seed = brandId.charCodeAt(brandId.length-1) + period.length;
-  const rng  = (min,max) => min + ((seed * 9301 + 49297) % 233280) / 233280 * (max-min);
-  const rm   = (min,max) => Math.floor(rng(min,max));
-  const muls = { realtime:1, daily:24, weekly:168 };
-  const m = muls[period];
-
-  const hype = Math.min(rm(42,92), 100);
-  const ttV  = rm(5000, 900000) * m;
-  const ytV  = rm(2000, 400000) * m;
-
-  return {
-    hype_score: hype,
-    mention_velocity: +(rng(4,55)).toFixed(1),
-    growth_rate: +(rng(-12, 90)).toFixed(1),
-    reach_estimate: rm(30000, 600000) * m,
-    top_platform: ['twitter','tiktok','youtube','reddit','linkedin'][rm(0,4)],
-    viral_posts: rm(0,9),
-    total_mentions: rm(40, 600) * m,
-    unique_authors: rm(15, 250) * m,
-    total_likes: rm(500, 8000) * m,
-    total_comments: rm(100, 2000) * m,
-    total_shares: rm(80, 1500) * m,
-    engagement_rate: +(rng(0.01, 0.09)).toFixed(4),
-    positive_ratio: rng(0.50, 0.80),
-    negative_ratio: rng(0.05, 0.20),
-    tiktok_views: ttV,
-    tiktok_mentions: rm(3, 55) * m,
-    youtube_views: ytV,
-    youtube_mentions: rm(2, 25) * m,
-    avg_watch_time_pct: +(rng(0.30, 0.75)).toFixed(2),
-    platform_breakdown: {
-      twitter:   rm(30,200)*m, tiktok: rm(20,150)*m,
-      youtube:   rm(10,80)*m,  reddit: rm(15,100)*m,
-      linkedin:  rm(5,60)*m,   instagram: rm(8,70)*m,
-    },
-    alerts: buildAlerts(hype, rng(4,55), rng(0.05,0.20), rng(-12,90), rm(0,9), rm(3,55), ttV),
-    top_posts: buildPosts(period),
-    ai_insight: buildInsight(hype, period, ttV, ytV),
-  };
+// User
+if (session) {
+  document.getElementById('u-name').textContent = session.name || session.email;
+  document.getElementById('u-plan').textContent = (session.plan || 'free').toUpperCase();
+  document.getElementById('u-av').textContent = (session.name||'A')[0].toUpperCase();
 }
 
-function buildAlerts(hype, vel, neg, growth, viral, ttCount, ttViews) {
-  const a = [];
-  if (hype >= 90)          a.push({ type:'hype',   text:'🔥 VIRAL HYPE DETECTED — exceptional momentum' });
-  else if (hype >= 75)     a.push({ type:'hype',   text:'🚀 HIGH HYPE MOMENTUM — capitalize now' });
-  if (vel >= 60)           a.push({ type:'hype',   text:'⚡ MENTION VELOCITY VIRAL — ' + vel.toFixed(0) + '/hr' });
-  else if (vel >= 30)      a.push({ type:'info',   text:'📈 FAST MENTION VELOCITY — ' + vel.toFixed(0) + '/hr' });
-  if (neg >= 0.35)         a.push({ type:'danger', text:'⚠️ HIGH NEGATIVE SENTIMENT — monitor crisis risk' });
-  if (growth >= 150)       a.push({ type:'hype',   text:'🎯 EXPLOSIVE GROWTH — +' + growth.toFixed(0) + '% vs prev period' });
-  else if (growth >= 40)   a.push({ type:'info',   text:'📊 STRONG GROWTH — +' + growth.toFixed(0) + '% vs prev period' });
-  else if (growth <= -25)  a.push({ type:'warn',   text:'📉 SIGNIFICANT DROP — investigate' });
-  if (viral >= 5)          a.push({ type:'hype',   text:'🌟 ' + viral + ' VIRAL POSTS ACTIVE' });
-  if (ttCount >= 15)       a.push({ type:'hype',   text:'🎵 TIKTOK TRENDING — ' + ttCount + ' videos detected' });
-  if (ttViews >= 500000)   a.push({ type:'info',   text:'▶️ VIDEO REACH 500K+ (' + fmtNum(ttViews) + ' views)' });
-  if (a.length === 0)      a.push({ type:'info',   text:'📡 MONITORING — no active signals' });
-  return a;
+// API helper
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, {
+    headers: {'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers||{})},
+    ...opts
+  });
+  if (res.status === 401) { logout(); return null; }
+  if (res.status === 204) return null;
+  if (!res.ok) { const e = await res.json().catch(()=>{}); throw new Error(e?.detail || 'API error'); }
+  return res.json();
 }
 
-function buildPosts(period) {
-  return [
-    { platform:'tiktok',   content:'POV: switched our whole startup to this tool and productivity went 🚀 #productivity #startup #workflow', likes:48200, shares:12400, comments:3200, views:892000, is_viral:true,  sentiment:'positive' },
-    { platform:'youtube',  content:'I Replaced Notion + Slack with ONE App for 30 Days — Honest Review with real team results', likes:9400, shares:1200, comments:847, views:234000, is_viral:true, sentiment:'positive' },
-    { platform:'twitter',  content:'The async collaboration on this is genuinely game-changing. 3 weeks in, never going back 🔥', likes:2341, shares:891, comments:234, views:0, is_viral:true, sentiment:'positive' },
-    { platform:'reddit',   content:'[AMA] We switched from Linear+Notion to this. Productivity up 40% in 3 weeks. Ask me anything.', likes:1892, shares:0, comments:567, views:0, is_viral:false, sentiment:'positive' },
-    { platform:'linkedin', content:'Comparing async tools in 2025 — a detailed breakdown for decision-makers', likes:943, shares:312, comments:189, views:0, is_viral:false, sentiment:'neutral' },
-  ];
+function logout() {
+  localStorage.clear();
+  window.location.href = 'login.html';
 }
 
-function buildInsight(hype, period, ttV, ytV) {
-  const mom = hype >= 80 ? 'exceptional viral' : hype >= 60 ? 'strong upward' : 'steady organic';
-  return `HYPE STATUS: Brand is experiencing ${mom} momentum. The ${hype}/100 hype score reflects genuine user enthusiasm, especially strong on TikTok where short-form content is driving massive organic reach (${fmtNum(ttV)} views this ${period}).
-
-KEY OPPORTUNITIES:
-→ TikTok "day in my life" creators are posting organically — reach out to the top 5 for partnerships before competitors notice.
-→ YouTube comparison format is driving high-intent search traffic (${fmtNum(ytV)} views); invest in a sponsored "vs competitors" video.
-→ Reddit AMA thread gaining traction — a founder-led AMA in r/startups this week could 5x thread engagement.
-
-RISK: Mobile UX complaints appear in ~4 posts. Not critical yet — proactive response thread recommended.
-
-RECOMMENDATION: Launch a TikTok creator seeding program — 10 productivity creators × 3-month Pro access for authentic reviews. Current video velocity makes this the highest ROI growth action available this week.`;
+function showPage(name, el) {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('on'));
+  document.getElementById('pg-' + name).classList.add('on');
+  if (el) el.classList.add('on');
+  if (name === 'brands') renderBrandsTable();
+  if (name === 'influencers') renderInfluencersTable();
+  if (name === 'alerts') loadAlerts();
 }
 
-/* ── Helpers ─────────────────────────────────────────────────────────────── */
-function fmtNum(n) {
-  if (n >= 1e9) return (n/1e9).toFixed(1)+'B';
-  if (n >= 1e6) return (n/1e6).toFixed(1)+'M';
-  if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
-  return Math.round(n).toString();
+function setTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.pt').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  if (currentBrandId) loadBrandDashboard(currentBrandId);
 }
-function hypeClass(s)  { return s>=90?'viral':s>=70?'hot':s>=50?'warn':''; }
-function hypeLabel(s)  { return s>=90?'🔥 VIRAL':s>=80?'🚀 HIGH HYPE':s>=60?'📈 GROWING':s>=40?'📊 BUILDING':'💤 QUIET'; }
-function platIcon(p)   { return {twitter:'𝕏',tiktok:'♪',youtube:'▶',reddit:'◉',linkedin:'in',instagram:'◑'}[p]||'○'; }
-function platClass(p)  { return 'pb-'+p; }
 
-/* ── Render Sidebar ──────────────────────────────────────────────────────── */
-function renderSidebar() {
-  const list = document.getElementById('brand-list');
-  const hypeData = BRANDS.map(b => ({ ...b, hype: genData(b.id, selectedPeriod).hype_score }));
-  list.innerHTML = hypeData.map(b => `
-    <div class="brand-item ${b.id===selectedBrandId?'active':''}" onclick="selectBrand('${b.id}')">
-      <div class="brand-avatar" style="background:${b.color}22; color:${b.color}; border:1px solid ${b.color}44">${b.emoji}</div>
-      <div class="brand-info">
-        <div class="brand-name">${b.name}</div>
-        <div class="brand-handle">${b.handle}</div>
+function fmt(n) {
+  if (n == null) return '—';
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return n.toLocaleString();
+}
+function pct(n) { return n != null ? n.toFixed(1) + '%' : '—'; }
+
+// ── BRANDS ──
+async function loadBrands() {
+  try {
+    brands = await api('/brands') || [];
+    renderBrandsList();
+    if (brands.length > 0 && !currentBrandId) selectBrand(brands[0].id);
+    else if (!brands.length) {
+      document.getElementById('dash-content').innerHTML = '<div class="empty"><div class="empty-icon">⬡</div><div class="empty-txt">No brands yet. Add your first brand!</div></div>';
+    }
+  } catch(e) { console.error(e); }
+}
+
+function renderBrandsList() {
+  const el = document.getElementById('brands-list');
+  if (!brands.length) { el.innerHTML = '<div style="padding:8px 10px;font-size:11px;color:var(--ink3)">No brands yet</div>'; return; }
+  el.innerHTML = brands.map(b => `
+    <div class="ti ${b.id===currentBrandId?'on':''}" onclick="selectBrand('${b.id}')">
+      <div class="ti-av" style="background:${b.color||'linear-gradient(135deg,#ef4136,#fbb040)'}">${b.emoji||b.name[0]}</div>
+      <div class="ti-info">
+        <div class="ti-name">${b.name}</div>
+        <div class="ti-sub">${b.handle}</div>
       </div>
-      <div class="brand-hype">${b.hype}</div>
-    </div>
-  `).join('');
+      <div class="ti-acts">
+        <button class="ti-btn" onclick="event.stopPropagation();editBrand('${b.id}')" title="Edit">✎</button>
+        <button class="ti-btn del" onclick="event.stopPropagation();deleteBrand('${b.id}')" title="Delete">✕</button>
+      </div>
+    </div>`).join('');
 }
 
-/* ── Render Topbar Brand Pill ─────────────────────────────────────────────  */
-function renderTopbarBrand() {
-  const brand = BRANDS.find(b => b.id === selectedBrandId);
-  if (!brand) return;
-  const pa = document.getElementById('pill-avatar');
-  const pn = document.getElementById('pill-name');
-  pa.style.background = brand.color + '33';
-  pa.style.border = `1px solid ${brand.color}66`;
-  pa.style.color = brand.color;
-  pa.style.fontSize = '9px'; pa.style.fontWeight = '700';
-  pa.style.width='22px'; pa.style.height='22px';
-  pa.style.borderRadius='6px'; pa.style.display='flex';
-  pa.style.alignItems='center'; pa.style.justifyContent='center';
-  pa.textContent = brand.emoji;
-  pn.textContent = brand.name;
+async function selectBrand(id) {
+  currentBrandId = id;
+  const b = brands.find(x => x.id === id);
+  if (b) document.getElementById('ctx-name').textContent = b.name;
+  renderBrandsList();
+  await loadBrandDashboard(id);
 }
 
-/* ── Render Dashboard ────────────────────────────────────────────────────── */
-function renderDashboard() {
-  const brand = BRANDS.find(b => b.id === selectedBrandId);
-  if (!brand) {
-    document.getElementById('dashboard-body').innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">◈</div>
-        <div class="empty-title">No brand selected</div>
-        <div class="empty-sub">Select a brand from the sidebar or add a new one to start monitoring.</div>
-      </div>`;
-    return;
+async function loadBrandDashboard(id) {
+  document.getElementById('dash-content').innerHTML = '<div style="padding:48px;text-align:center;color:var(--ink3)">Loading dashboard…</div>';
+  try {
+    const [dash, scores] = await Promise.all([
+      api(`/brands/${id}/dashboard?period=${currentTab}`),
+      api(`/brands/${id}/scores`).catch(() => null)
+    ]);
+    renderDashboard(dash, scores);
+  } catch(e) {
+    document.getElementById('dash-content').innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">No metrics yet for this brand.<br><small style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)">Add metrics via the API to see data here.</small></div></div>`;
   }
+}
 
-  const d = genData(brand.id, selectedPeriod);
-  const pos = d.positive_ratio;
-  const neg = d.negative_ratio;
-  const neu = Math.max(0, 1 - pos - neg);
-  const now = new Date();
-  document.getElementById('ts-chip').textContent = now.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-
-  const maxPlat = Math.max(...Object.values(d.platform_breakdown));
-
-  const platRows = Object.entries(d.platform_breakdown)
-    .sort((a,b)=>b[1]-a[1])
-    .map(([p,v]) => `
-      <div class="plat-row">
-        <div class="plat-icon">${platIcon(p)}</div>
-        <div class="plat-name">${p.charAt(0).toUpperCase()+p.slice(1)}</div>
-        <div class="plat-track"><div class="plat-fill" style="width:${v/maxPlat*100}%;background:${p==='tiktok'?'var(--pink)':p==='youtube'?'var(--danger)':p==='linkedin'?'var(--teal)':p==='twitter'?'var(--blue)':'var(--ink3)'}"></div></div>
-        <div class="plat-count">${fmtNum(v)}</div>
-      </div>`).join('');
-
-  const alertsHTML = d.alerts.map(a => `
-    <div class="alert-item ${a.type}">
-      <div>
-        <div>${a.text}</div>
-        <div class="alert-time">${now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</div>
+function renderDashboard(dash, scores) {
+  const m = dash?.latest;
+  document.getElementById('dash-content').innerHTML = `
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-lbl">Hype Score</div>
+        <div class="kpi-val" style="background:linear-gradient(135deg,#ef4136,#fbb040);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${m?.hype_score ?? '—'}</div>
+        <div class="kpi-sub">out of 100</div>
       </div>
-    </div>`).join('');
-
-  const postsHTML = d.top_posts.map(p => `
-    <div class="post-item">
-      <span class="post-platform-badge ${platClass(p.platform)}">${p.platform.toUpperCase()}</span>
-      <div style="flex:1;min-width:0">
-        <div class="post-content-text">${p.content}</div>
-        <div class="post-stats">
-          <span class="post-stat-item">♡ ${fmtNum(p.likes)}</span>
-          <span class="post-stat-item">⟳ ${fmtNum(p.shares)}</span>
-          <span class="post-stat-item">💬 ${fmtNum(p.comments)}</span>
-          ${p.views?`<span class="post-stat-item" style="color:var(--pink)">👁 ${fmtNum(p.views)}</span>`:''}
-        </div>
+      <div class="kpi">
+        <div class="kpi-lbl">Mentions</div>
+        <div class="kpi-val">${fmt(m?.mentions)}</div>
+        <div class="kpi-sub">velocity ${m?.velocity?.toFixed(1) ?? '—'}/hr</div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0">
-        ${p.is_viral?'<span class="viral-tag">🔥 viral</span>':''}
-        <span style="font-family:DM Mono,monospace;font-size:9px;padding:2px 6px;border-radius:3px;${p.sentiment==='positive'?'background:rgba(198,241,53,0.1);color:var(--lime)':p.sentiment==='negative'?'background:rgba(247,79,79,0.1);color:var(--danger)':'background:var(--border);color:var(--ink3)'}">${p.sentiment}</span>
+      <div class="kpi">
+        <div class="kpi-lbl">Est. Reach</div>
+        <div class="kpi-val">${fmt(m?.reach)}</div>
+        <div class="kpi-sub">${m?.viral_posts ?? 0} viral posts</div>
       </div>
-    </div>`).join('');
-
-  // Comparison bar for all brands
-  const compChips = BRANDS.map(b => {
-    const bd = genData(b.id, selectedPeriod);
-    return `<div class="comp-brand-chip ${b.id===selectedBrandId?'active':''}" onclick="selectBrand('${b.id}')">
-      <div class="comp-chip-avatar" style="background:${b.color}22;color:${b.color}">${b.emoji}</div>
-      <span class="comp-chip-name">${b.name}</span>
-      <span class="comp-chip-score">${bd.hype_score}</span>
-    </div>`;
-  }).join('');
-
-  document.getElementById('dashboard-body').innerHTML = `
-    <!-- Comparison Bar -->
-    <div class="comparison-bar">
-      <span class="comp-label">All Brands</span>
-      <div class="comp-brands">${compChips}</div>
-      <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--ink3)">HYPE SCORE ↑</span>
-    </div>
-
-    <!-- Hero Row -->
-    <div class="hero-row">
-      <div class="hype-card featured">
-        <div class="card-label">◈ Hype Score</div>
-        <div class="hype-number ${hypeClass(d.hype_score)}" id="animated-hype">0</div>
-        <div class="hype-bar-track"><div class="hype-bar-fill" id="hype-bar" style="width:0%"></div></div>
-        <div class="hype-status-badge" id="hype-badge">—</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="card-label">⚡ Mention Velocity</div>
-        <div class="stat-number">${d.mention_velocity}<span style="font-size:14px;color:var(--ink3);font-weight:400">/h</span></div>
-        <div class="stat-sub">mentions per hour</div>
-        <div class="stat-delta ${d.growth_rate>=0?'delta-up':'delta-down'}">${d.growth_rate>=0?'↑':'↓'} ${Math.abs(d.growth_rate).toFixed(1)}% vs prev</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="card-label">📡 Est. Reach</div>
-        <div class="stat-number">${fmtNum(d.reach_estimate)}</div>
-        <div class="stat-sub">incl. video views</div>
-        <div class="stat-delta delta-up">↑ ${d.viral_posts} viral posts</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="card-label">🎬 Video Views</div>
-        <div class="stat-number">${fmtNum(d.tiktok_views + d.youtube_views)}</div>
-        <div class="stat-sub">TikTok ${fmtNum(d.tiktok_views)} · YT ${fmtNum(d.youtube_views)}</div>
-        <div class="stat-delta delta-up">↑ avg ${Math.round(d.avg_watch_time_pct*100)}% watched</div>
+      <div class="kpi">
+        <div class="kpi-lbl">Engagement</div>
+        <div class="kpi-val">${pct(m?.engagement_rate)}</div>
+        <div class="kpi-sub">${fmt((m?.likes||0)+(m?.comments||0)+(m?.shares||0))} interactions</div>
       </div>
     </div>
 
-    <!-- KPI Row -->
-    <div class="kpi-row">
-      <div class="kpi-chip">
-        <div class="kpi-chip-label">Mentions</div>
-        <div class="kpi-chip-val">${fmtNum(d.total_mentions)}</div>
-        <div class="kpi-chip-sub">${selectedPeriod}</div>
+    <div class="grid-65">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card">
+          <div class="sec-hd"><div class="sec-ttl"><div class="sec-dot"></div> Sentiment Breakdown</div><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--success)">${pct(m?.sentiment_positive)} Positive</span></div>
+          <div class="sent-bar">
+            <div class="sent-row"><div class="sent-lbl">Positive</div><div class="sent-track"><div class="sent-fill pos" style="width:${m?.sentiment_positive??0}%"></div></div><div class="sent-pct">${pct(m?.sentiment_positive)}</div></div>
+            <div class="sent-row"><div class="sent-lbl">Neutral</div><div class="sent-track"><div class="sent-fill neu" style="width:${m?.sentiment_neutral??0}%"></div></div><div class="sent-pct">${pct(m?.sentiment_neutral)}</div></div>
+            <div class="sent-row"><div class="sent-lbl">Negative</div><div class="sent-track"><div class="sent-fill neg" style="width:${m?.sentiment_negative??0}%"></div></div><div class="sent-pct">${pct(m?.sentiment_negative)}</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="sec-hd"><div class="sec-ttl"><div class="sec-dot"></div> Platform Breakdown</div></div>
+          <div class="plat-row"><div class="plat-name">▶ YouTube</div><div class="plat-vals"><span>${fmt(m?.youtube_views)} views</span><span>${m?.youtube_videos??0} videos</span></div></div>
+          <div class="plat-row"><div class="plat-name">♪ TikTok</div><div class="plat-vals"><span>${fmt(m?.tiktok_views)} views</span><span>${m?.tiktok_videos??0} videos</span></div></div>
+          <div class="plat-row"><div class="plat-name">◎ Avg Watch</div><div class="plat-vals"><span>${pct(m?.avg_watch_pct)}</span></div></div>
+        </div>
       </div>
-      <div class="kpi-chip">
-        <div class="kpi-chip-label">Unique Authors</div>
-        <div class="kpi-chip-val">${fmtNum(d.unique_authors)}</div>
-        <div class="kpi-chip-sub">distinct voices</div>
-      </div>
-      <div class="kpi-chip">
-        <div class="kpi-chip-label">Total Likes</div>
-        <div class="kpi-chip-val">${fmtNum(d.total_likes)}</div>
-        <div class="kpi-chip-sub">across platforms</div>
-      </div>
-      <div class="kpi-chip">
-        <div class="kpi-chip-label">Engagement</div>
-        <div class="kpi-chip-val">${(d.engagement_rate*100).toFixed(2)}<span style="font-size:12px;font-weight:400">%</span></div>
-        <div class="kpi-chip-sub">per impression</div>
-      </div>
-      <div class="kpi-chip" style="border-color:rgba(247,79,142,0.25)">
-        <div class="kpi-chip-label" style="color:var(--pink)">🎵 TikTok</div>
-        <div class="kpi-chip-val">${fmtNum(d.tiktok_views)}</div>
-        <div class="kpi-chip-sub">${d.tiktok_mentions} videos</div>
-      </div>
-      <div class="kpi-chip" style="border-color:rgba(247,79,79,0.25)">
-        <div class="kpi-chip-label" style="color:#f97575">▶ YouTube</div>
-        <div class="kpi-chip-val">${fmtNum(d.youtube_views)}</div>
-        <div class="kpi-chip-sub">${d.youtube_mentions} videos</div>
+      <div class="card">
+        <div class="sec-hd"><div class="sec-ttl"><div class="sec-dot"></div> Brand Scores</div></div>
+        ${scores ? `
+          <div style="margin-bottom:16px">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:1px;margin-bottom:4px">CHS SCORE</div>
+            <div style="font-size:42px;font-weight:800;background:linear-gradient(135deg,#ef4136,#fbb040);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${scores.chs?.score ?? '—'}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3)">${scores.chs?.label ?? ''}</div>
+          </div>
+          <div style="margin-bottom:16px">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:1px;margin-bottom:4px">BHI SCORE</div>
+            <div style="font-size:42px;font-weight:800;color:var(--yellow)">${scores.bhi?.score ?? '—'}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3)">${scores.bhi?.label ?? ''}</div>
+          </div>
+          ${(scores.chs?.components||[]).map(c=>`
+            <div class="score-row"><div class="score-lbl">${c.name}</div><div class="score-bar-wrap"><div class="score-bar-fill" style="width:${c.value}%"></div></div><div class="score-num">${c.value}</div></div>`).join('')}
+        ` : `<div style="color:var(--ink3);font-size:12px;text-align:center;padding:24px">No scores yet.<br><small style="font-family:'DM Mono',monospace;font-size:10px">Compute via API</small></div>`}
       </div>
     </div>
 
-    <!-- Middle Row -->
-    <div class="middle-row">
-      <!-- Sentiment -->
-      <div class="panel">
-        <div class="panel-title">Sentiment Breakdown <span style="color:var(--ink)">${Math.round(pos*100)}% positive</span></div>
-        <div class="sent-row">
-          <div class="sent-lbl">Positive</div>
-          <div class="sent-track"><div class="sent-fill pos" style="width:${pos*100}%"></div></div>
-          <div class="sent-pct">${Math.round(pos*100)}%</div>
-        </div>
-        <div class="sent-row">
-          <div class="sent-lbl">Neutral</div>
-          <div class="sent-track"><div class="sent-fill neu" style="width:${neu*100}%"></div></div>
-          <div class="sent-pct">${Math.round(neu*100)}%</div>
-        </div>
-        <div class="sent-row">
-          <div class="sent-lbl">Negative</div>
-          <div class="sent-track"><div class="sent-fill neg" style="width:${neg*100}%"></div></div>
-          <div class="sent-pct">${Math.round(neg*100)}%</div>
-        </div>
-        <div style="margin-top:20px">
-          <div class="panel-title" style="margin-bottom:12px">Platform Breakdown</div>
-          ${platRows}
-        </div>
-      </div>
-
-      <!-- Alerts -->
-      <div class="panel">
-        <div class="panel-title">🚨 Active Signals</div>
-        ${alertsHTML}
-      </div>
-
-      <!-- AI Insight -->
-      <div class="ai-panel">
-        <div class="ai-badge">✦ AI GROWTH INTELLIGENCE</div>
-        <div class="ai-text">${d.ai_insight}</div>
-        <button class="ai-action-btn">Generate Full Report →</button>
-      </div>
-    </div>
-
-    <!-- Bottom Row -->
-    <div class="bottom-row">
-      <!-- Top Posts -->
-      <div class="panel">
-        <div class="panel-title">⚡ Top Performing Content</div>
-        ${postsHTML}
-      </div>
-
-      <!-- Quick Stats -->
-      <div class="panel">
-        <div class="panel-title">📊 Period Summary</div>
-        <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px">
-          ${[
-            ['Total Engagements', fmtNum(d.total_likes+d.total_comments+d.total_shares)],
-            ['Comments', fmtNum(d.total_comments)],
-            ['Shares / Reposts', fmtNum(d.total_shares)],
-            ['Top Platform', d.top_platform.charAt(0).toUpperCase()+d.top_platform.slice(1)],
-            ['Avg Watch Time', Math.round(d.avg_watch_time_pct*100)+'%'],
-            ['Growth Rate', (d.growth_rate>=0?'+':'')+d.growth_rate.toFixed(1)+'%'],
-          ].map(([k,v]) => `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--border)">
-              <span style="font-size:12px;color:var(--ink3)">${k}</span>
-              <span style="font-family:DM Mono,monospace;font-size:12px;font-weight:500;color:var(--ink)">${v}</span>
-            </div>`).join('')}
-        </div>
-      </div>
+    <div class="grid-3">
+      <div class="kpi"><div class="kpi-lbl">Unique Authors</div><div class="kpi-val" style="font-size:22px">${fmt(m?.unique_authors)}</div><div class="kpi-sub">distinct voices</div></div>
+      <div class="kpi"><div class="kpi-lbl">Total Likes</div><div class="kpi-val" style="font-size:22px">${fmt(m?.likes)}</div><div class="kpi-sub">across platforms</div></div>
+      <div class="kpi"><div class="kpi-lbl">Growth Rate</div><div class="kpi-val" style="font-size:22px">${m?.growth_rate != null ? m.growth_rate.toFixed(1)+'%' : '—'}</div><div class="kpi-sub">period over period</div></div>
     </div>
   `;
-
-  // Animate hype number
-  animateHype(d.hype_score);
 }
 
-function animateHype(target) {
-  const el = document.getElementById('animated-hype');
-  const bar = document.getElementById('hype-bar');
-  const badge = document.getElementById('hype-badge');
-  if (!el) return;
-  let current = 0;
-  const step = target / 40;
-  const timer = setInterval(() => {
-    current = Math.min(current + step, target);
-    el.textContent = Math.round(current);
-    el.className = 'hype-number ' + hypeClass(current);
-    if (bar) bar.style.width = current + '%';
-    if (current >= target) {
-      clearInterval(timer);
-      if (badge) {
-        badge.textContent = hypeLabel(target);
-        badge.style.background = target>=80?'rgba(247,79,142,0.1)':'rgba(198,241,53,0.1)';
-        badge.style.color = target>=80?'var(--pink)':'var(--lime)';
-        badge.style.borderColor = target>=80?'rgba(247,79,142,0.3)':'rgba(198,241,53,0.3)';
-      }
-    }
-  }, 25);
+// ── INFLUENCERS ──
+async function loadInfluencers() {
+  try {
+    influencers = await api('/influencers') || [];
+    renderInfluencersList();
+  } catch(e) { console.error(e); }
 }
 
-/* ── Brand Selection ──────────────────────────────────────────────────────  */
-function selectBrand(id) {
-  selectedBrandId = id;
-  renderSidebar();
-  renderTopbarBrand();
-  renderDashboard();
+function renderInfluencersList() {
+  const el = document.getElementById('influencers-list');
+  if (!influencers.length) { el.innerHTML = '<div style="padding:8px 10px;font-size:11px;color:var(--ink3)">No influencers yet</div>'; return; }
+  el.innerHTML = influencers.map(inf => `
+    <div class="ti">
+      <div class="ti-av" style="background:rgba(255,255,255,.1);border-radius:50%;font-size:10px">✦</div>
+      <div class="ti-info">
+        <div class="ti-name">${inf.name}</div>
+        <div class="ti-sub">${inf.handle} · ${inf.platform}</div>
+      </div>
+      <div class="ti-acts">
+        <button class="ti-btn del" onclick="deleteInfluencer('${inf.id}')">✕</button>
+      </div>
+    </div>`).join('');
 }
 
-function switchPeriod(period, el) {
-  selectedPeriod = period;
-  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  renderSidebar();
-  renderDashboard();
+function renderBrandsTable() {
+  const tbody = document.getElementById('brands-table-body');
+  if (!brands.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink3)">No brands yet. Add your first brand!</td></tr>'; return; }
+  tbody.innerHTML = brands.map(b => `
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:5px;background:${b.color||'linear-gradient(135deg,#ef4136,#fbb040)'};display:flex;align-items:center;justify-content:center;font-size:10px">${b.emoji||b.name[0]}</div><strong>${b.name}</strong></div></td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3)">${b.handle}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--orange)">—</td>
+      <td style="font-family:'DM Mono',monospace">—</td>
+      <td style="font-family:'DM Mono',monospace">—</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="act-btn" onclick="editBrand('${b.id}')">✎</button>
+        <button class="act-btn del" onclick="deleteBrand('${b.id}')">✕</button>
+      </div></td>
+    </tr>`).join('');
 }
 
-/* ── Add Brand Modal ─────────────────────────────────────────────────────── */
-function openModal()  { document.getElementById('modal-overlay').classList.add('open'); }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-
-function selectColor(el) {
-  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedColor = el.dataset.color;
+function renderInfluencersTable() {
+  const tbody = document.getElementById('influencers-table-body');
+  if (!influencers.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--ink3)">No influencers yet.</td></tr>'; return; }
+  const icons = {instagram:'📸',tiktok:'♪',youtube:'▶',twitter:'𝕏',reddit:'⬤'};
+  tbody.innerHTML = influencers.map(inf => `
+    <tr>
+      <td style="font-weight:700">${inf.name}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3)">${inf.handle}</td>
+      <td><span class="plat-badge">${icons[inf.platform]||'·'} ${inf.platform}</span></td>
+      <td style="font-family:'DM Mono',monospace">${fmt(inf.followers)}</td>
+      <td><button class="act-btn del" onclick="deleteInfluencer('${inf.id}')">✕</button></td>
+    </tr>`).join('');
 }
 
-function addBrand() {
-  const name = document.getElementById('inp-name').value.trim();
-  const handle = document.getElementById('inp-handle').value.trim();
-  if (!name || !handle) { alert('Please fill in all fields.'); return; }
-
-  const id = 'b' + Date.now();
-  const emoji = name.charAt(0).toUpperCase();
-  BRANDS.push({ id, name, handle, color: selectedColor, emoji, keywords: [handle.toLowerCase()] });
-
-  document.getElementById('inp-name').value = '';
-  document.getElementById('inp-handle').value = '';
-  closeModal();
-  selectBrand(id);
+// ── ALERTS ──
+async function loadAlerts() {
+  try {
+    alertsList = await api('/alerts') || [];
+    const unread = alertsList.filter(a => !a.is_read).length;
+    document.getElementById('alert-count').textContent = unread || '—';
+    const el = document.getElementById('alerts-list');
+    if (!alertsList.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🔔</div><div class="empty-txt">No alerts yet</div></div>'; return; }
+    el.innerHTML = alertsList.map(a => `
+      <div class="alert-item" style="${a.is_read?'opacity:.5':''}">
+        <div class="alert-dot ${a.severity||'info'}"></div>
+        <div>
+          <div class="alert-text">${a.message}</div>
+          <div class="alert-time">${new Date(a.created_at).toLocaleString()}</div>
+        </div>
+      </div>`).join('');
+  } catch(e) { console.error(e); }
 }
 
-/* ── Close modal on overlay click ─────────────────────────────────────────  */
-document.getElementById('modal-overlay').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeModal();
+async function markAllRead() {
+  try { await api('/alerts/read-all', {method:'POST'}); await loadAlerts(); } catch(e) {}
+}
+
+// ── CRUD ──
+function openModal(type, data) {
+  if (type === 'influencer') {
+    document.getElementById('modal-inf-title').textContent = data ? 'Edit Influencer' : 'Add Influencer';
+    document.getElementById('inf-edit-id').value = data?.id || '';
+    document.getElementById('inf-name').value = data?.name || '';
+    document.getElementById('inf-handle').value = data?.handle || '';
+    document.getElementById('inf-platform').value = data?.platform || 'instagram';
+    document.getElementById('inf-followers').value = data?.followers || '';
+    const sel = document.getElementById('inf-brand');
+    sel.innerHTML = '<option value="">Select brand…</option>' + brands.map(b => `<option value="${b.id}"${data?.brand_id===b.id?' selected':''}>${b.name}</option>`).join('');
+    document.getElementById('modal-influencer').classList.add('open');
+  } else {
+    document.getElementById('modal-brand-title').textContent = data ? 'Edit Brand' : 'Add Brand';
+    document.getElementById('brand-edit-id').value = data?.id || '';
+    document.getElementById('brand-name').value = data?.name || '';
+    document.getElementById('brand-handle').value = data?.handle || '';
+    document.getElementById('brand-color').value = data?.color || '#ef4136';
+    document.getElementById('brand-emoji').value = data?.emoji || '🔥';
+    document.getElementById('modal-brand').classList.add('open');
+  }
+}
+function closeModal(type) { document.getElementById('modal-' + type).classList.remove('open'); }
+
+async function saveBrand() {
+  const id = document.getElementById('brand-edit-id').value;
+  const body = { name: document.getElementById('brand-name').value.trim(), handle: document.getElementById('brand-handle').value.trim(), color: document.getElementById('brand-color').value.trim() || '#ef4136', emoji: document.getElementById('brand-emoji').value.trim() || '🔥' };
+  if (!body.name || !body.handle) return alert('Name and handle are required');
+  try {
+    if (id) await api(`/brands/${id}`, {method:'PATCH', body:JSON.stringify(body)});
+    else await api('/brands', {method:'POST', body:JSON.stringify(body)});
+    closeModal('brand'); await loadBrands();
+  } catch(e) { alert(e.message); }
+}
+
+function editBrand(id) { const b = brands.find(x => x.id === id); if (b) openModal('brand', b); }
+
+async function deleteBrand(id) {
+  if (!confirm('Delete this brand?')) return;
+  try { await api(`/brands/${id}`, {method:'DELETE'}); if (currentBrandId === id) currentBrandId = null; await loadBrands(); } catch(e) { alert(e.message); }
+}
+
+async function saveInfluencer() {
+  const id = document.getElementById('inf-edit-id').value;
+  const body = { brand_id: document.getElementById('inf-brand').value, name: document.getElementById('inf-name').value.trim(), handle: document.getElementById('inf-handle').value.trim(), platform: document.getElementById('inf-platform').value, followers: parseInt(document.getElementById('inf-followers').value) || 0 };
+  if (!body.name || !body.handle || !body.brand_id) return alert('Brand, name and handle are required');
+  try {
+    if (id) await api(`/influencers/${id}`, {method:'PATCH', body:JSON.stringify(body)});
+    else await api('/influencers', {method:'POST', body:JSON.stringify(body)});
+    closeModal('influencer'); await loadInfluencers();
+  } catch(e) { alert(e.message); }
+}
+
+async function deleteInfluencer(id) {
+  if (!confirm('Delete this influencer?')) return;
+  try { await api(`/influencers/${id}`, {method:'DELETE'}); await loadInfluencers(); } catch(e) { alert(e.message); }
+}
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
 });
 
-/* ── Auto-refresh every 60s ──────────────────────────────────────────────── */
-function startAutoRefresh() {
-  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-  autoRefreshTimer = setInterval(() => {
-    if (selectedBrandId) renderDashboard();
-  }, 60000);
+async function refreshData() {
+  await Promise.all([loadBrands(), loadInfluencers(), loadAlerts()]);
+  if (currentBrandId) await loadBrandDashboard(currentBrandId);
 }
 
-/* ── Auth Guard ──────────────────────────────────────────────────────────── */
-const _session = JSON.parse(localStorage.getItem('spr_session') || 'null');
-if (!_session) { window.location.href = 'login.html'; }
-
-// Inject user info into sidebar footer
-function renderUserFooter() {
-  if (!_session) return;
-  const footerEl = document.querySelector('.sidebar-footer');
-  if (!footerEl) return;
-  const colors = ['#c8f04c','#4a7cf6','#f04a8c','#f0c84a','#4af0c8'];
-  const color = colors[_session.id ? _session.id.charCodeAt(_session.id.length-1) % colors.length : 0];
-  footerEl.innerHTML = `
-    <div class="user-row">
-      <div class="user-avatar" style="background:linear-gradient(135deg,${color},${color}88)">${_session.name.charAt(0).toUpperCase()}</div>
-      <div>
-        <div class="user-name">${_session.name}</div>
-        <div class="user-plan">${(_session.plan||'').toUpperCase()}</div>
-      </div>
-    </div>
-    ${_session.role === 'admin' ? `<div onclick="window.location.href='admin.html'" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;color:var(--ink3);font-size:12px;margin-top:2px;transition:all .15s" onmouseover="this.style.background='var(--surface)';this.style.color='var(--lime)'" onmouseout="this.style.background='';this.style.color='var(--ink3)'">⚙ Admin Panel</div>` : ''}
-    <div onclick="localStorage.removeItem('spr_session');window.location.href='login.html'" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;color:var(--ink3);font-size:12px;transition:all .15s" onmouseover="this.style.background='var(--surface)';this.style.color='var(--danger)'" onmouseout="this.style.background='';this.style.color='var(--ink3)'">⎋ Sign out</div>
-  `;
-}
-
-/* ── Init ─────────────────────────────────────────────────────────────────  */
-renderUserFooter();
-selectBrand('b1');
-startAutoRefresh();
+// Init
+loadBrands();
+loadInfluencers();
+loadAlerts();
 </script>
 </body>
 </html>
