@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spendrics — Social Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Bricolage+Grotesque:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Tokens ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #07080c;
+  --bg2:       #0c0e15;
+  --surface:   #111420;
+  --surface2:  #161927;
+  --border:    #1f2436;
+  --border2:   #2a2f45;
+
+  --ink:       #eef0f7;
+  --ink2:      #9ca3be;
+  --ink3:      #545d7a;
+
+  --lime:      #c6f135;
+  --lime-dim:  rgba(198,241,53,0.12);
+  --lime-glow: rgba(198,241,53,0.25);
+
+  --blue:      #4f8ef7;
+  --pink:      #f74f8e;
+  --amber:     #f7c24f;
+  --teal:      #4ff7c2;
+  --danger:    #f74f4f;
+
+  --radius:    12px;
+  --radius-sm: 7px;
+
+  font-size: 14px;
+}
+
+html, body { height: 100%; }
+body {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  display: flex;
+  overflow: hidden;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ─── Sidebar ─────────────────────────────────────────────────────────────  */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--lime);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 900; color: #000; letter-spacing: -1px;
+}
+.logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+}
+.logo-text span { color: var(--lime); }
+.logo-domain {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink3);
+  letter-spacing: 0.5px;
+  padding-left: 42px;
+}
+
+/* Brand Switcher */
+.brand-section {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin-bottom: 8px;
+}
+.brand-list { display: flex; flex-direction: column; gap: 2px; }
+
+.brand-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+  position: relative;
+}
+.brand-item:hover { background: var(--surface); }
+.brand-item.active {
+  background: var(--surface2);
+  border-color: var(--border2);
+}
+.brand-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 60%;
+  background: var(--lime);
+  border-radius: 0 2px 2px 0;
+}
+
+.brand-avatar {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  flex-shrink: 0;
+}
+.brand-info { flex: 1; min-width: 0; }
+.brand-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.brand-handle {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--ink3);
+}
+.brand-hype {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--lime);
+}
+
+/* Add brand button */
+.add-brand-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px dashed var(--border2);
+  color: var(--ink3);
+  font-size: 12px;
+  transition: all 0.15s;
+  margin-top: 4px;
+  background: transparent;
+  width: 100%;
+  font-family: 'Bricolage Grotesque', sans-serif;
+}
+.add-brand-btn:hover { border-color: var(--lime); color: var(--lime); }
+
+/* Sidebar Nav */
+.sidebar-nav {
+  padding: 12px;
+  flex: 1;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--ink3);
+  font-size: 13px;
+  transition: all 0.15s;
+}
+.nav-item:hover { background: var(--surface); color: var(--ink); }
+.nav-item.active { background: var(--lime-dim); color: var(--lime); }
+.nav-icon { font-size: 14px; width: 20px; text-align: center; }
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+.user-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.user-row:hover { background: var(--surface); }
+.user-avatar {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+}
+.user-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+.user-plan {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; color: var(--lime);
+}
+
+/* ─── Main Content ───────────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Top Bar */
+.topbar {
+  padding: 0 28px;
+  height: 60px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  background: var(--bg2);
+}
+.topbar-left {
+  display: flex; align-items: center; gap: 16px;
+}
+.current-brand-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 6px 14px 6px 8px;
+}
+.pill-avatar {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+}
+.pill-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+.period-tabs {
+  display: flex; gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+}
+.tab-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 5px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: var(--ink3);
+  transition: all 0.15s;
+  border: none; background: transparent;
+}
+.tab-btn.active { background: var(--lime); color: #000; font-weight: 700; }
+.tab-btn:hover:not(.active) { color: var(--ink); }
+
+.topbar-right {
+  display: flex; align-items: center; gap: 12px;
+}
+.live-pill {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--lime);
+  background: var(--lime-dim);
+  border: 1px solid var(--lime-glow);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--lime);
+  border-radius: 50%;
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.ts-chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink3);
+}
+.icon-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  color: var(--ink3);
+  transition: all 0.15s;
+}
+.icon-btn:hover { border-color: var(--border2); color: var(--ink); }
+
+/* ─── Dashboard Body ─────────────────────────────────────────────────────── */
+.dashboard-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── Hype Hero Row ──────────────────────────────────────────────────────── */
+.hero-row {
+  display: grid;
+  grid-template-columns: 280px 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.hype-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.hype-card.featured {
+  border-color: var(--lime-glow);
+  background: linear-gradient(135deg, var(--surface) 60%, rgba(198,241,53,0.04));
+}
+.hype-card.featured::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--lime), transparent);
+}
+
+.card-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.hype-number {
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: -4px;
+  line-height: 1;
+  color: var(--lime);
+  transition: color 0.4s;
+}
+.hype-number.warn  { color: var(--amber); }
+.hype-number.hot   { color: #ff8c35; }
+.hype-number.viral { color: var(--pink); animation: viralPulse 1.2s ease-in-out infinite alternate; }
+@keyframes viralPulse {
+  from { text-shadow: 0 0 30px rgba(247,79,142,0.4); }
+  to   { text-shadow: 0 0 70px rgba(247,79,142,0.8), 0 0 120px rgba(247,79,142,0.3); }
+}
+
+.hype-bar-track {
+  width: 100%; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 14px;
+  overflow: hidden;
+}
+.hype-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--blue) 0%, var(--lime) 60%, var(--pink) 100%);
+  transition: width 1.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.hype-status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 10px;
+  font-size: 11px; font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--lime-dim);
+  color: var(--lime);
+  border: 1px solid var(--lime-glow);
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.stat-number {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink3);
+  margin-top: 6px;
+}
+.stat-delta {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  margin-top: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.delta-up   { color: var(--lime); background: var(--lime-dim); }
+.delta-down { color: var(--danger); background: rgba(247,79,79,0.08); }
+
+/* ─── KPI Row ────────────────────────────────────────────────────────────── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+.kpi-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: border-color 0.2s;
+}
+.kpi-chip:hover { border-color: var(--border2); }
+.kpi-chip-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: 1.5px;
+  color: var(--ink3); text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.kpi-chip-val {
+  font-size: 24px; font-weight: 800;
+  letter-spacing: -1px; line-height: 1;
+  color: var(--ink);
+}
+.kpi-chip-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; color: var(--ink3); margin-top: 4px;
+}
+
+/* ─── Middle Row ─────────────────────────────────────────────────────────── */
+.middle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 12px;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.panel-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 2px;
+  color: var(--ink3); text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* Sentiment bars */
+.sent-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+.sent-lbl { font-family:'DM Mono',monospace; font-size:10px; color:var(--ink3); width:55px; }
+.sent-track { flex:1; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+.sent-fill { height:100%; border-radius:3px; transition: width 0.8s ease; }
+.sent-fill.pos { background: var(--lime); }
+.sent-fill.neu { background: var(--ink3); }
+.sent-fill.neg { background: var(--danger); }
+.sent-pct { font-family:'DM Mono',monospace; font-size:10px; color:var(--ink); width:30px; text-align:right; }
+
+/* Platform bars */
+.plat-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 9px;
+}
+.plat-icon { font-size:13px; width:18px; text-align:center; }
+.plat-name { font-size:11px; font-weight:500; color:var(--ink2); width:70px; }
+.plat-track { flex:1; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+.plat-fill  { height:100%; border-radius:2px; transition: width 0.8s ease; }
+.plat-count { font-family:'DM Mono',monospace; font-size:10px; color:var(--ink3); width:36px; text-align:right; }
+
+/* Alerts */
+.alert-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 7px;
+  font-size: 12px;
+  line-height: 1.4;
+  animation: fadeSlide 0.3s ease;
+}
+@keyframes fadeSlide { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+.alert-item.hype   { background:rgba(198,241,53,0.06); border:1px solid rgba(198,241,53,0.2); color:var(--lime); }
+.alert-item.warn   { background:rgba(247,194,79,0.06); border:1px solid rgba(247,194,79,0.2); color:var(--amber); }
+.alert-item.danger { background:rgba(247,79,79,0.06);  border:1px solid rgba(247,79,79,0.2);  color:var(--danger); }
+.alert-item.info   { background:rgba(79,142,247,0.06); border:1px solid rgba(79,142,247,0.2); color:var(--blue); }
+.alert-time { font-family:'DM Mono',monospace; font-size:9px; color:var(--ink3); margin-top:2px; }
+
+/* ─── Bottom Row ─────────────────────────────────────────────────────────── */
+.bottom-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 12px;
+}
+
+/* Top Posts */
+.post-item {
+  display: flex; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.post-item:last-child { border-bottom: none; padding-bottom: 0; }
+.post-platform-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; padding: 3px 7px;
+  border-radius: 4px; font-weight: 500;
+  white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+}
+.pb-twitter   { background:rgba(79,142,247,0.12); color:var(--blue); }
+.pb-tiktok    { background:rgba(247,79,142,0.12); color:var(--pink); }
+.pb-youtube   { background:rgba(247,79,79,0.12);  color:#f97575; }
+.pb-reddit    { background:rgba(247,142,79,0.12); color:#f79a5f; }
+.pb-linkedin  { background:rgba(79,198,247,0.12); color:var(--teal); }
+.pb-instagram { background:rgba(198,79,247,0.12); color:#c466f7; }
+
+.post-content-text {
+  font-size: 12px; color: var(--ink2); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.post-stats {
+  display: flex; gap: 12px; margin-top: 6px;
+}
+.post-stat-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--ink3);
+}
+.viral-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(247,79,142,0.12); color: var(--pink);
+  border: 1px solid rgba(247,79,142,0.2);
+}
+
+/* AI Insight */
+.ai-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.ai-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--pink), var(--lime));
+}
+.ai-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
+  color: var(--blue); background: rgba(79,142,247,0.1);
+  border: 1px solid rgba(79,142,247,0.25);
+  padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 14px; width: fit-content;
+}
+.ai-text {
+  font-size: 12px; line-height: 1.7; color: var(--ink2);
+  white-space: pre-line; flex: 1; overflow-y: auto;
+}
+.ai-action-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 14px;
+  padding: 9px;
+  background: var(--lime-dim); border: 1px solid var(--lime-glow);
+  border-radius: var(--radius-sm);
+  color: var(--lime); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+}
+.ai-action-btn:hover { background: var(--lime); color: #000; }
+
+/* ─── Multi-Brand Comparison Bar ─────────────────────────────────────────── */
+.comparison-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.comp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: 2px; color: var(--ink3); text-transform: uppercase;
+  white-space: nowrap;
+}
+.comp-brands {
+  display: flex; gap: 8px; flex: 1; flex-wrap: wrap;
+}
+.comp-brand-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.comp-brand-chip:hover { border-color: var(--lime-glow); }
+.comp-brand-chip.active { border-color: var(--lime-glow); background: var(--lime-dim); }
+.comp-chip-avatar {
+  width: 18px; height: 18px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700;
+}
+.comp-chip-name { font-size: 11px; font-weight: 600; color: var(--ink); }
+.comp-chip-score { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--lime); }
+
+/* ─── Add Brand Modal ────────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 28px;
+  width: 420px;
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:none} }
+.modal-title {
+  font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 4px;
+}
+.modal-sub { font-size: 12px; color: var(--ink3); margin-bottom: 24px; }
+.form-field { margin-bottom: 16px; }
+.form-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: 1.5px; color: var(--ink3);
+  text-transform: uppercase; display: block; margin-bottom: 6px;
+}
+.form-input {
+  width: 100%; padding: 10px 14px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); color: var(--ink);
+  font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px;
+  outline: none; transition: border-color 0.15s;
+}
+.form-input:focus { border-color: var(--lime); }
+.form-input::placeholder { color: var(--ink3); }
+.color-picker-row {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.color-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  cursor: pointer; transition: transform 0.15s;
+  border: 2px solid transparent;
+}
+.color-dot:hover { transform: scale(1.2); }
+.color-dot.selected { border-color: var(--ink); }
+.modal-actions { display: flex; gap: 8px; margin-top: 8px; }
+.btn-primary {
+  flex: 1; padding: 10px;
+  background: var(--lime); color: #000; font-weight: 700; font-size: 13px;
+  border: none; border-radius: var(--radius-sm); cursor: pointer;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-ghost {
+  padding: 10px 16px;
+  background: transparent; color: var(--ink3);
+  border: 1px solid var(--border2); border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 13px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  transition: all 0.15s;
+}
+.btn-ghost:hover { border-color: var(--border); color: var(--ink); }
+
+/* ─── Empty State ─────────────────────────────────────────────────────────  */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 48px 24px; text-align: center; gap: 12px;
+}
+.empty-icon { font-size: 36px; }
+.empty-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+.empty-sub { font-size: 12px; color: var(--ink3); max-width: 260px; line-height: 1.6; }
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .hero-row { grid-template-columns: 240px 1fr 1fr; }
+  .hero-row > .stat-card:last-child { display: none; }
+  .kpi-row { grid-template-columns: repeat(3,1fr); }
+}
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .middle-row { grid-template-columns: 1fr; }
+  .bottom-row { grid-template-columns: 1fr; }
+  .hero-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">S</div>
+      <div class="logo-text">spend<span>rics</span></div>
+    </div>
+    <div class="logo-domain">spendrics.com</div>
+  </div>
+
+  <div class="brand-section">
+    <div class="section-label">Tracked Brands</div>
+    <div class="brand-list" id="brand-list"></div>
+    <button class="add-brand-btn" onclick="openModal()">
+      <span style="font-size:16px">＋</span>
+      Add Brand / Account
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="section-label" style="margin-top:4px">Navigation</div>
+    <div class="nav-item active"><span class="nav-icon">◈</span> Dashboard</div>
+    <div class="nav-item"><span class="nav-icon">⚡</span> Hype Monitor</div>
+    <div class="nav-item"><span class="nav-icon">📊</span> Analytics</div>
+    <div class="nav-item"><span class="nav-icon">🔔</span> Alerts</div>
+    <div class="nav-item"><span class="nav-icon">📝</span> Reports</div>
+    <div class="nav-item"><span class="nav-icon">⚙</span> Integrations</div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">AY</div>
+      <div>
+        <div class="user-name">Ahmet Y.</div>
+        <div class="user-plan">PRO PLAN</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════ MAIN ══════════ -->
+<main class="main">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="current-brand-pill" id="current-brand-pill">
+        <div class="pill-avatar" id="pill-avatar" style="background:#c6f135"></div>
+        <span class="pill-name" id="pill-name">—</span>
+      </div>
+      <div class="period-tabs">
+        <button class="tab-btn active" onclick="switchPeriod('realtime',this)">⚡ Live</button>
+        <button class="tab-btn" onclick="switchPeriod('daily',this)">Daily</button>
+        <button class="tab-btn" onclick="switchPeriod('weekly',this)">Weekly</button>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="live-pill"><div class="live-dot"></div> LIVE</div>
+      <div class="ts-chip" id="ts-chip">—</div>
+      <div class="icon-btn" title="Refresh" onclick="renderDashboard()">↻</div>
+      <div class="icon-btn" title="Settings">⚙</div>
+    </div>
+  </div>
+
+  <!-- Dashboard Body -->
+  <div class="dashboard-body" id="dashboard-body">
+    <!-- populated by JS -->
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════ ADD BRAND MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Add Brand / Account</div>
+    <div class="modal-sub">Track a new brand, product, or social account</div>
+
+    <div class="form-field">
+      <label class="form-label">Brand Name</label>
+      <input class="form-input" id="inp-name" type="text" placeholder="e.g. Unionion">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Handle / Keyword</label>
+      <input class="form-input" id="inp-handle" type="text" placeholder="e.g. @unionion or #unionion">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Brand Color</label>
+      <div class="color-picker-row" id="color-picker">
+        <div class="color-dot selected" style="background:#c6f135" data-color="#c6f135" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#4f8ef7" data-color="#4f8ef7" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#f74f8e" data-color="#f74f8e" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#f7c24f" data-color="#f7c24f" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#4ff7c2" data-color="#4ff7c2" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#a78bfa" data-color="#a78bfa" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#f97575" data-color="#f97575" onclick="selectColor(this)"></div>
+        <div class="color-dot" style="background:#fb923c" data-color="#fb923c" onclick="selectColor(this)"></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="addBrand()">Track Brand →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ SCRIPT ═══ -->
+<script>
+/* ── State ──────────────────────────────────────────────────────────────── */
+let selectedBrandId = null;
+let selectedPeriod  = 'realtime';
+let selectedColor   = '#c6f135';
+let autoRefreshTimer = null;
+
+const BRAND_COLORS = [
+  '#c6f135','#4f8ef7','#f74f8e','#f7c24f','#4ff7c2','#a78bfa','#f97575','#fb923c'
+];
+
+/* ── Initial Brand Data ─────────────────────────────────────────────────── */
+const BRANDS = [
+  {
+    id: 'b1', name: 'Unionion', handle: '@unionion',
+    color: '#c6f135', emoji: 'U',
+    keywords: ['unionion','@unionion','#unionion'],
+  },
+  {
+    id: 'b2', name: 'Spendrics', handle: '@spendrics',
+    color: '#4f8ef7', emoji: 'S',
+    keywords: ['spendrics','@spendrics'],
+  },
+  {
+    id: 'b3', name: 'TechFlow', handle: '#techflow',
+    color: '#f74f8e', emoji: 'T',
+    keywords: ['techflow','#techflow'],
+  },
+];
+
+/* ── Data Generation ─────────────────────────────────────────────────────  */
+function genData(brandId, period) {
+  const seed = brandId.charCodeAt(brandId.length-1) + period.length;
+  const rng  = (min,max) => min + ((seed * 9301 + 49297) % 233280) / 233280 * (max-min);
+  const rm   = (min,max) => Math.floor(rng(min,max));
+  const muls = { realtime:1, daily:24, weekly:168 };
+  const m = muls[period];
+
+  const hype = Math.min(rm(42,92), 100);
+  const ttV  = rm(5000, 900000) * m;
+  const ytV  = rm(2000, 400000) * m;
+
+  return {
+    hype_score: hype,
+    mention_velocity: +(rng(4,55)).toFixed(1),
+    growth_rate: +(rng(-12, 90)).toFixed(1),
+    reach_estimate: rm(30000, 600000) * m,
+    top_platform: ['twitter','tiktok','youtube','reddit','linkedin'][rm(0,4)],
+    viral_posts: rm(0,9),
+    total_mentions: rm(40, 600) * m,
+    unique_authors: rm(15, 250) * m,
+    total_likes: rm(500, 8000) * m,
+    total_comments: rm(100, 2000) * m,
+    total_shares: rm(80, 1500) * m,
+    engagement_rate: +(rng(0.01, 0.09)).toFixed(4),
+    positive_ratio: rng(0.50, 0.80),
+    negative_ratio: rng(0.05, 0.20),
+    tiktok_views: ttV,
+    tiktok_mentions: rm(3, 55) * m,
+    youtube_views: ytV,
+    youtube_mentions: rm(2, 25) * m,
+    avg_watch_time_pct: +(rng(0.30, 0.75)).toFixed(2),
+    platform_breakdown: {
+      twitter:   rm(30,200)*m, tiktok: rm(20,150)*m,
+      youtube:   rm(10,80)*m,  reddit: rm(15,100)*m,
+      linkedin:  rm(5,60)*m,   instagram: rm(8,70)*m,
+    },
+    alerts: buildAlerts(hype, rng(4,55), rng(0.05,0.20), rng(-12,90), rm(0,9), rm(3,55), ttV),
+    top_posts: buildPosts(period),
+    ai_insight: buildInsight(hype, period, ttV, ytV),
+  };
+}
+
+function buildAlerts(hype, vel, neg, growth, viral, ttCount, ttViews) {
+  const a = [];
+  if (hype >= 90)          a.push({ type:'hype',   text:'🔥 VIRAL HYPE DETECTED — exceptional momentum' });
+  else if (hype >= 75)     a.push({ type:'hype',   text:'🚀 HIGH HYPE MOMENTUM — capitalize now' });
+  if (vel >= 60)           a.push({ type:'hype',   text:'⚡ MENTION VELOCITY VIRAL — ' + vel.toFixed(0) + '/hr' });
+  else if (vel >= 30)      a.push({ type:'info',   text:'📈 FAST MENTION VELOCITY — ' + vel.toFixed(0) + '/hr' });
+  if (neg >= 0.35)         a.push({ type:'danger', text:'⚠️ HIGH NEGATIVE SENTIMENT — monitor crisis risk' });
+  if (growth >= 150)       a.push({ type:'hype',   text:'🎯 EXPLOSIVE GROWTH — +' + growth.toFixed(0) + '% vs prev period' });
+  else if (growth >= 40)   a.push({ type:'info',   text:'📊 STRONG GROWTH — +' + growth.toFixed(0) + '% vs prev period' });
+  else if (growth <= -25)  a.push({ type:'warn',   text:'📉 SIGNIFICANT DROP — investigate' });
+  if (viral >= 5)          a.push({ type:'hype',   text:'🌟 ' + viral + ' VIRAL POSTS ACTIVE' });
+  if (ttCount >= 15)       a.push({ type:'hype',   text:'🎵 TIKTOK TRENDING — ' + ttCount + ' videos detected' });
+  if (ttViews >= 500000)   a.push({ type:'info',   text:'▶️ VIDEO REACH 500K+ (' + fmtNum(ttViews) + ' views)' });
+  if (a.length === 0)      a.push({ type:'info',   text:'📡 MONITORING — no active signals' });
+  return a;
+}
+
+function buildPosts(period) {
+  return [
+    { platform:'tiktok',   content:'POV: switched our whole startup to this tool and productivity went 🚀 #productivity #startup #workflow', likes:48200, shares:12400, comments:3200, views:892000, is_viral:true,  sentiment:'positive' },
+    { platform:'youtube',  content:'I Replaced Notion + Slack with ONE App for 30 Days — Honest Review with real team results', likes:9400, shares:1200, comments:847, views:234000, is_viral:true, sentiment:'positive' },
+    { platform:'twitter',  content:'The async collaboration on this is genuinely game-changing. 3 weeks in, never going back 🔥', likes:2341, shares:891, comments:234, views:0, is_viral:true, sentiment:'positive' },
+    { platform:'reddit',   content:'[AMA] We switched from Linear+Notion to this. Productivity up 40% in 3 weeks. Ask me anything.', likes:1892, shares:0, comments:567, views:0, is_viral:false, sentiment:'positive' },
+    { platform:'linkedin', content:'Comparing async tools in 2025 — a detailed breakdown for decision-makers', likes:943, shares:312, comments:189, views:0, is_viral:false, sentiment:'neutral' },
+  ];
+}
+
+function buildInsight(hype, period, ttV, ytV) {
+  const mom = hype >= 80 ? 'exceptional viral' : hype >= 60 ? 'strong upward' : 'steady organic';
+  return `HYPE STATUS: Brand is experiencing ${mom} momentum. The ${hype}/100 hype score reflects genuine user enthusiasm, especially strong on TikTok where short-form content is driving massive organic reach (${fmtNum(ttV)} views this ${period}).
+
+KEY OPPORTUNITIES:
+→ TikTok "day in my life" creators are posting organically — reach out to the top 5 for partnerships before competitors notice.
+→ YouTube comparison format is driving high-intent search traffic (${fmtNum(ytV)} views); invest in a sponsored "vs competitors" video.
+→ Reddit AMA thread gaining traction — a founder-led AMA in r/startups this week could 5x thread engagement.
+
+RISK: Mobile UX complaints appear in ~4 posts. Not critical yet — proactive response thread recommended.
+
+RECOMMENDATION: Launch a TikTok creator seeding program — 10 productivity creators × 3-month Pro access for authentic reviews. Current video velocity makes this the highest ROI growth action available this week.`;
+}
+
+/* ── Helpers ─────────────────────────────────────────────────────────────── */
+function fmtNum(n) {
+  if (n >= 1e9) return (n/1e9).toFixed(1)+'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1)+'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
+  return Math.round(n).toString();
+}
+function hypeClass(s)  { return s>=90?'viral':s>=70?'hot':s>=50?'warn':''; }
+function hypeLabel(s)  { return s>=90?'🔥 VIRAL':s>=80?'🚀 HIGH HYPE':s>=60?'📈 GROWING':s>=40?'📊 BUILDING':'💤 QUIET'; }
+function platIcon(p)   { return {twitter:'𝕏',tiktok:'♪',youtube:'▶',reddit:'◉',linkedin:'in',instagram:'◑'}[p]||'○'; }
+function platClass(p)  { return 'pb-'+p; }
+
+/* ── Render Sidebar ──────────────────────────────────────────────────────── */
+function renderSidebar() {
+  const list = document.getElementById('brand-list');
+  const hypeData = BRANDS.map(b => ({ ...b, hype: genData(b.id, selectedPeriod).hype_score }));
+  list.innerHTML = hypeData.map(b => `
+    <div class="brand-item ${b.id===selectedBrandId?'active':''}" onclick="selectBrand('${b.id}')">
+      <div class="brand-avatar" style="background:${b.color}22; color:${b.color}; border:1px solid ${b.color}44">${b.emoji}</div>
+      <div class="brand-info">
+        <div class="brand-name">${b.name}</div>
+        <div class="brand-handle">${b.handle}</div>
+      </div>
+      <div class="brand-hype">${b.hype}</div>
+    </div>
+  `).join('');
+}
+
+/* ── Render Topbar Brand Pill ─────────────────────────────────────────────  */
+function renderTopbarBrand() {
+  const brand = BRANDS.find(b => b.id === selectedBrandId);
+  if (!brand) return;
+  const pa = document.getElementById('pill-avatar');
+  const pn = document.getElementById('pill-name');
+  pa.style.background = brand.color + '33';
+  pa.style.border = `1px solid ${brand.color}66`;
+  pa.style.color = brand.color;
+  pa.style.fontSize = '9px'; pa.style.fontWeight = '700';
+  pa.style.width='22px'; pa.style.height='22px';
+  pa.style.borderRadius='6px'; pa.style.display='flex';
+  pa.style.alignItems='center'; pa.style.justifyContent='center';
+  pa.textContent = brand.emoji;
+  pn.textContent = brand.name;
+}
+
+/* ── Render Dashboard ────────────────────────────────────────────────────── */
+function renderDashboard() {
+  const brand = BRANDS.find(b => b.id === selectedBrandId);
+  if (!brand) {
+    document.getElementById('dashboard-body').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">◈</div>
+        <div class="empty-title">No brand selected</div>
+        <div class="empty-sub">Select a brand from the sidebar or add a new one to start monitoring.</div>
+      </div>`;
+    return;
+  }
+
+  const d = genData(brand.id, selectedPeriod);
+  const pos = d.positive_ratio;
+  const neg = d.negative_ratio;
+  const neu = Math.max(0, 1 - pos - neg);
+  const now = new Date();
+  document.getElementById('ts-chip').textContent = now.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+  const maxPlat = Math.max(...Object.values(d.platform_breakdown));
+
+  const platRows = Object.entries(d.platform_breakdown)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([p,v]) => `
+      <div class="plat-row">
+        <div class="plat-icon">${platIcon(p)}</div>
+        <div class="plat-name">${p.charAt(0).toUpperCase()+p.slice(1)}</div>
+        <div class="plat-track"><div class="plat-fill" style="width:${v/maxPlat*100}%;background:${p==='tiktok'?'var(--pink)':p==='youtube'?'var(--danger)':p==='linkedin'?'var(--teal)':p==='twitter'?'var(--blue)':'var(--ink3)'}"></div></div>
+        <div class="plat-count">${fmtNum(v)}</div>
+      </div>`).join('');
+
+  const alertsHTML = d.alerts.map(a => `
+    <div class="alert-item ${a.type}">
+      <div>
+        <div>${a.text}</div>
+        <div class="alert-time">${now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+    </div>`).join('');
+
+  const postsHTML = d.top_posts.map(p => `
+    <div class="post-item">
+      <span class="post-platform-badge ${platClass(p.platform)}">${p.platform.toUpperCase()}</span>
+      <div style="flex:1;min-width:0">
+        <div class="post-content-text">${p.content}</div>
+        <div class="post-stats">
+          <span class="post-stat-item">♡ ${fmtNum(p.likes)}</span>
+          <span class="post-stat-item">⟳ ${fmtNum(p.shares)}</span>
+          <span class="post-stat-item">💬 ${fmtNum(p.comments)}</span>
+          ${p.views?`<span class="post-stat-item" style="color:var(--pink)">👁 ${fmtNum(p.views)}</span>`:''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0">
+        ${p.is_viral?'<span class="viral-tag">🔥 viral</span>':''}
+        <span style="font-family:DM Mono,monospace;font-size:9px;padding:2px 6px;border-radius:3px;${p.sentiment==='positive'?'background:rgba(198,241,53,0.1);color:var(--lime)':p.sentiment==='negative'?'background:rgba(247,79,79,0.1);color:var(--danger)':'background:var(--border);color:var(--ink3)'}">${p.sentiment}</span>
+      </div>
+    </div>`).join('');
+
+  // Comparison bar for all brands
+  const compChips = BRANDS.map(b => {
+    const bd = genData(b.id, selectedPeriod);
+    return `<div class="comp-brand-chip ${b.id===selectedBrandId?'active':''}" onclick="selectBrand('${b.id}')">
+      <div class="comp-chip-avatar" style="background:${b.color}22;color:${b.color}">${b.emoji}</div>
+      <span class="comp-chip-name">${b.name}</span>
+      <span class="comp-chip-score">${bd.hype_score}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('dashboard-body').innerHTML = `
+    <!-- Comparison Bar -->
+    <div class="comparison-bar">
+      <span class="comp-label">All Brands</span>
+      <div class="comp-brands">${compChips}</div>
+      <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--ink3)">HYPE SCORE ↑</span>
+    </div>
+
+    <!-- Hero Row -->
+    <div class="hero-row">
+      <div class="hype-card featured">
+        <div class="card-label">◈ Hype Score</div>
+        <div class="hype-number ${hypeClass(d.hype_score)}" id="animated-hype">0</div>
+        <div class="hype-bar-track"><div class="hype-bar-fill" id="hype-bar" style="width:0%"></div></div>
+        <div class="hype-status-badge" id="hype-badge">—</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="card-label">⚡ Mention Velocity</div>
+        <div class="stat-number">${d.mention_velocity}<span style="font-size:14px;color:var(--ink3);font-weight:400">/h</span></div>
+        <div class="stat-sub">mentions per hour</div>
+        <div class="stat-delta ${d.growth_rate>=0?'delta-up':'delta-down'}">${d.growth_rate>=0?'↑':'↓'} ${Math.abs(d.growth_rate).toFixed(1)}% vs prev</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="card-label">📡 Est. Reach</div>
+        <div class="stat-number">${fmtNum(d.reach_estimate)}</div>
+        <div class="stat-sub">incl. video views</div>
+        <div class="stat-delta delta-up">↑ ${d.viral_posts} viral posts</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="card-label">🎬 Video Views</div>
+        <div class="stat-number">${fmtNum(d.tiktok_views + d.youtube_views)}</div>
+        <div class="stat-sub">TikTok ${fmtNum(d.tiktok_views)} · YT ${fmtNum(d.youtube_views)}</div>
+        <div class="stat-delta delta-up">↑ avg ${Math.round(d.avg_watch_time_pct*100)}% watched</div>
+      </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi-chip">
+        <div class="kpi-chip-label">Mentions</div>
+        <div class="kpi-chip-val">${fmtNum(d.total_mentions)}</div>
+        <div class="kpi-chip-sub">${selectedPeriod}</div>
+      </div>
+      <div class="kpi-chip">
+        <div class="kpi-chip-label">Unique Authors</div>
+        <div class="kpi-chip-val">${fmtNum(d.unique_authors)}</div>
+        <div class="kpi-chip-sub">distinct voices</div>
+      </div>
+      <div class="kpi-chip">
+        <div class="kpi-chip-label">Total Likes</div>
+        <div class="kpi-chip-val">${fmtNum(d.total_likes)}</div>
+        <div class="kpi-chip-sub">across platforms</div>
+      </div>
+      <div class="kpi-chip">
+        <div class="kpi-chip-label">Engagement</div>
+        <div class="kpi-chip-val">${(d.engagement_rate*100).toFixed(2)}<span style="font-size:12px;font-weight:400">%</span></div>
+        <div class="kpi-chip-sub">per impression</div>
+      </div>
+      <div class="kpi-chip" style="border-color:rgba(247,79,142,0.25)">
+        <div class="kpi-chip-label" style="color:var(--pink)">🎵 TikTok</div>
+        <div class="kpi-chip-val">${fmtNum(d.tiktok_views)}</div>
+        <div class="kpi-chip-sub">${d.tiktok_mentions} videos</div>
+      </div>
+      <div class="kpi-chip" style="border-color:rgba(247,79,79,0.25)">
+        <div class="kpi-chip-label" style="color:#f97575">▶ YouTube</div>
+        <div class="kpi-chip-val">${fmtNum(d.youtube_views)}</div>
+        <div class="kpi-chip-sub">${d.youtube_mentions} videos</div>
+      </div>
+    </div>
+
+    <!-- Middle Row -->
+    <div class="middle-row">
+      <!-- Sentiment -->
+      <div class="panel">
+        <div class="panel-title">Sentiment Breakdown <span style="color:var(--ink)">${Math.round(pos*100)}% positive</span></div>
+        <div class="sent-row">
+          <div class="sent-lbl">Positive</div>
+          <div class="sent-track"><div class="sent-fill pos" style="width:${pos*100}%"></div></div>
+          <div class="sent-pct">${Math.round(pos*100)}%</div>
+        </div>
+        <div class="sent-row">
+          <div class="sent-lbl">Neutral</div>
+          <div class="sent-track"><div class="sent-fill neu" style="width:${neu*100}%"></div></div>
+          <div class="sent-pct">${Math.round(neu*100)}%</div>
+        </div>
+        <div class="sent-row">
+          <div class="sent-lbl">Negative</div>
+          <div class="sent-track"><div class="sent-fill neg" style="width:${neg*100}%"></div></div>
+          <div class="sent-pct">${Math.round(neg*100)}%</div>
+        </div>
+        <div style="margin-top:20px">
+          <div class="panel-title" style="margin-bottom:12px">Platform Breakdown</div>
+          ${platRows}
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <div class="panel">
+        <div class="panel-title">🚨 Active Signals</div>
+        ${alertsHTML}
+      </div>
+
+      <!-- AI Insight -->
+      <div class="ai-panel">
+        <div class="ai-badge">✦ AI GROWTH INTELLIGENCE</div>
+        <div class="ai-text">${d.ai_insight}</div>
+        <button class="ai-action-btn">Generate Full Report →</button>
+      </div>
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="bottom-row">
+      <!-- Top Posts -->
+      <div class="panel">
+        <div class="panel-title">⚡ Top Performing Content</div>
+        ${postsHTML}
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="panel">
+        <div class="panel-title">📊 Period Summary</div>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px">
+          ${[
+            ['Total Engagements', fmtNum(d.total_likes+d.total_comments+d.total_shares)],
+            ['Comments', fmtNum(d.total_comments)],
+            ['Shares / Reposts', fmtNum(d.total_shares)],
+            ['Top Platform', d.top_platform.charAt(0).toUpperCase()+d.top_platform.slice(1)],
+            ['Avg Watch Time', Math.round(d.avg_watch_time_pct*100)+'%'],
+            ['Growth Rate', (d.growth_rate>=0?'+':'')+d.growth_rate.toFixed(1)+'%'],
+          ].map(([k,v]) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--border)">
+              <span style="font-size:12px;color:var(--ink3)">${k}</span>
+              <span style="font-family:DM Mono,monospace;font-size:12px;font-weight:500;color:var(--ink)">${v}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Animate hype number
+  animateHype(d.hype_score);
+}
+
+function animateHype(target) {
+  const el = document.getElementById('animated-hype');
+  const bar = document.getElementById('hype-bar');
+  const badge = document.getElementById('hype-badge');
+  if (!el) return;
+  let current = 0;
+  const step = target / 40;
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = Math.round(current);
+    el.className = 'hype-number ' + hypeClass(current);
+    if (bar) bar.style.width = current + '%';
+    if (current >= target) {
+      clearInterval(timer);
+      if (badge) {
+        badge.textContent = hypeLabel(target);
+        badge.style.background = target>=80?'rgba(247,79,142,0.1)':'rgba(198,241,53,0.1)';
+        badge.style.color = target>=80?'var(--pink)':'var(--lime)';
+        badge.style.borderColor = target>=80?'rgba(247,79,142,0.3)':'rgba(198,241,53,0.3)';
+      }
+    }
+  }, 25);
+}
+
+/* ── Brand Selection ──────────────────────────────────────────────────────  */
+function selectBrand(id) {
+  selectedBrandId = id;
+  renderSidebar();
+  renderTopbarBrand();
+  renderDashboard();
+}
+
+function switchPeriod(period, el) {
+  selectedPeriod = period;
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderSidebar();
+  renderDashboard();
+}
+
+/* ── Add Brand Modal ─────────────────────────────────────────────────────── */
+function openModal()  { document.getElementById('modal-overlay').classList.add('open'); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+function selectColor(el) {
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedColor = el.dataset.color;
+}
+
+function addBrand() {
+  const name = document.getElementById('inp-name').value.trim();
+  const handle = document.getElementById('inp-handle').value.trim();
+  if (!name || !handle) { alert('Please fill in all fields.'); return; }
+
+  const id = 'b' + Date.now();
+  const emoji = name.charAt(0).toUpperCase();
+  BRANDS.push({ id, name, handle, color: selectedColor, emoji, keywords: [handle.toLowerCase()] });
+
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-handle').value = '';
+  closeModal();
+  selectBrand(id);
+}
+
+/* ── Close modal on overlay click ─────────────────────────────────────────  */
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+/* ── Auto-refresh every 60s ──────────────────────────────────────────────── */
+function startAutoRefresh() {
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+  autoRefreshTimer = setInterval(() => {
+    if (selectedBrandId) renderDashboard();
+  }, 60000);
+}
+
+/* ── Auth Guard ──────────────────────────────────────────────────────────── */
+const _session = JSON.parse(localStorage.getItem('spr_session') || 'null');
+if (!_session) { window.location.href = 'login.html'; }
+
+// Inject user info into sidebar footer
+function renderUserFooter() {
+  if (!_session) return;
+  const footerEl = document.querySelector('.sidebar-footer');
+  if (!footerEl) return;
+  const colors = ['#c8f04c','#4a7cf6','#f04a8c','#f0c84a','#4af0c8'];
+  const color = colors[_session.id ? _session.id.charCodeAt(_session.id.length-1) % colors.length : 0];
+  footerEl.innerHTML = `
+    <div class="user-row">
+      <div class="user-avatar" style="background:linear-gradient(135deg,${color},${color}88)">${_session.name.charAt(0).toUpperCase()}</div>
+      <div>
+        <div class="user-name">${_session.name}</div>
+        <div class="user-plan">${(_session.plan||'').toUpperCase()}</div>
+      </div>
+    </div>
+    ${_session.role === 'admin' ? `<div onclick="window.location.href='admin.html'" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;color:var(--ink3);font-size:12px;margin-top:2px;transition:all .15s" onmouseover="this.style.background='var(--surface)';this.style.color='var(--lime)'" onmouseout="this.style.background='';this.style.color='var(--ink3)'">⚙ Admin Panel</div>` : ''}
+    <div onclick="localStorage.removeItem('spr_session');window.location.href='login.html'" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;color:var(--ink3);font-size:12px;transition:all .15s" onmouseover="this.style.background='var(--surface)';this.style.color='var(--danger)'" onmouseout="this.style.background='';this.style.color='var(--ink3)'">⎋ Sign out</div>
+  `;
+}
+
+/* ── Init ─────────────────────────────────────────────────────────────────  */
+renderUserFooter();
+selectBrand('b1');
+startAutoRefresh();
+</script>
+</body>
+</html>
