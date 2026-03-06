@@ -182,14 +182,15 @@ document.getElementById('login-form').addEventListener('submit', async function(
     localStorage.setItem('spr_token', data.access_token);
     localStorage.setItem('spr_session', JSON.stringify({
       id: data.user.id,
-      name: data.user.name,
+      display_name: data.user.display_name,
+      name: data.user.display_name || data.user.email,
       email: data.user.email,
       role: data.user.role,
-      plan: data.user.plan
+      plan: data.user.plan || 'free'
     }));
 
     // Redirect based on role
-    window.location.href = data.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+    window.location.href = (data.user.role === 'admin' || data.user.role === 'owner') ? 'admin.html' : 'dashboard.html';
 
   } catch (err) {
     document.getElementById('btn-text').style.display = 'block';
