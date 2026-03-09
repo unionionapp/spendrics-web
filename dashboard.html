@@ -310,9 +310,9 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
     <div class="tb-l">
       <div class="ctx-pill"><span id="ctx-name">Select a brand</span></div>
       <div class="ptabs">
-        <button class="pt on" onclick="setTab('7d',this)">7 Days</button>
-        <button class="pt" onclick="setTab('30d',this)">30 Days</button>
-        <button class="pt" onclick="setTab('90d',this)">90 Days</button>
+        <button class="pt on" onclick="setTab('realtime',this)">Realtime</button>
+        <button class="pt" onclick="setTab('daily',this)">Daily</button>
+        <button class="pt" onclick="setTab('weekly',this)">Weekly</button>
       </div>
     </div>
     <div class="tb-r">
@@ -493,7 +493,7 @@ const API = 'https://spendrics-api.onrender.com/api/v1';
 let token   = localStorage.getItem('spr_token');
 let session = JSON.parse(localStorage.getItem('spr_session') || 'null');
 let brands = [], influencers = [], alertsList = [], campaigns = [];
-let currentBrandId = null, currentTab = '7d';
+let currentBrandId = null, currentTab = 'realtime';
 
 if (!token || !session) window.location.href = 'login.html';
 
@@ -600,7 +600,7 @@ function renderBrandsList() {
       <div class="ti-av" style="background:${b.color||'var(--grad)'}">${b.emoji||b.name[0]}</div>
       <div class="ti-info">
         <div class="ti-name">${b.name}</div>
-        <div class="ti-sub">${b.handle||''}</div>
+        <div class="ti-sub">${b.handle||''} ${b.is_active===false?'· <span style="color:var(--ink4)">inactive</span>':''}</div>
       </div>
       <div class="ti-acts">
         <button class="ti-btn" onclick="event.stopPropagation();editBrand('${b.id}')">✎</button>
@@ -620,23 +620,49 @@ async function selectBrand(id) {
 async function loadBrandDashboard(id) {
   document.getElementById('dash-content').innerHTML = '<div class="loading-state">Loading dashboard…</div>';
   try {
-    const [dash, scores] = await Promise.allSettled([
+    const [dashRes, scoresRes] = await Promise.allSettled([
       api(`/brands/${id}/dashboard?period=${currentTab}`),
       api(`/brands/${id}/scores`)
     ]);
-    renderDashboard(
-      dash.status   === 'fulfilled' ? dash.value   : null,
-      scores.status === 'fulfilled' ? scores.value : null
-    );
+    const dash   = dashRes.status   === 'fulfilled' ? dashRes.value   : null;
+    const scores = scoresRes.status === 'fulfilled' ? scoresRes.value : null;
+    renderDashboard(dash, scores);
   } catch(e) {
     document.getElementById('dash-content').innerHTML =
-      `<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">No metrics yet for this brand.<br><small style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)">Data populates after the first worker run.</small></div></div>`;
+      `<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">Could not load dashboard.<br><small style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)">${e.message}</small></div></div>`;
   }
 }
 
 function renderDashboard(dash, scores) {
-  const m = dash?.latest;
-  document.getElementById('dash-content').innerHTML = `
+  // API response: { brand: {...}, latest: {...}|null, period: "realtime"|"daily"|"weekly" }
+  const brand = dash?.brand;
+  const m     = dash?.latest;   // null when no signals ingested yet
+  const period = dash?.period || currentTab;
+
+  // Brand info bar
+  const brandBar = brand ? `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:12px 16px;background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);box-shadow:var(--shadow-sm)">
+      <div style="width:32px;height:32px;border-radius:8px;background:${brand.color||'var(--grad)'};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${brand.emoji||brand.name?.[0]||'◉'}</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:800;color:var(--ink)">${brand.name}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)">${brand.handle||''} · Period: ${period.toUpperCase()}</div>
+      </div>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:4px;background:${brand.is_active?'rgba(26,127,90,.1)':'var(--sf2)'};color:${brand.is_active?'var(--success)':'var(--ink3)'};border:1px solid ${brand.is_active?'rgba(26,127,90,.2)':'var(--br)'};font-weight:700">${brand.is_active?'ACTIVE':'INACTIVE'}</span>
+    </div>` : '';
+
+  // No data yet state
+  if (!m) {
+    document.getElementById('dash-content').innerHTML = brandBar + `
+      <div class="empty" style="background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);box-shadow:var(--shadow-sm)">
+        <div class="empty-icon">◈</div>
+        <div class="empty-txt">No signal data yet for <strong>${brand?.name||'this brand'}</strong>.<br>
+          <span style="font-family:'DM Mono',monospace;font-size:10px">Workers ingest data every 15 min — check back shortly.</span>
+        </div>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('dash-content').innerHTML = brandBar + `
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-lbl">Hype Score</div>
         <div class="kpi-val" style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${m?.hype_score??'—'}</div>
@@ -684,13 +710,13 @@ function renderDashboard(dash, scores) {
           </div>
           ${(scores.chs?.components||[]).map(c=>`
             <div class="score-row"><div class="score-lbl">${c.name}</div><div class="score-bar-wrap"><div class="score-bar-fill" style="width:${c.value}%"></div></div><div class="score-num">${c.value}</div></div>`).join('')}
-        ` : `<div style="color:var(--ink3);font-size:12px;text-align:center;padding:24px 0;line-height:1.7">No scores yet.<br><span style="font-family:'DM Mono',monospace;font-size:10px">Compute via API</span></div>`}
+        ` : `<div style="color:var(--ink3);font-size:12px;text-align:center;padding:24px 0;line-height:1.7">No scores yet.<br><span style="font-family:'DM Mono',monospace;font-size:10px">Workers compute scores every 15 min.</span></div>`}
       </div>
     </div>
     <div class="grid-3">
       <div class="kpi"><div class="kpi-lbl">Unique Authors</div><div class="kpi-val" style="font-size:22px">${fmt(m?.unique_authors)}</div><div class="kpi-sub">distinct voices</div></div>
       <div class="kpi"><div class="kpi-lbl">Total Likes</div><div class="kpi-val" style="font-size:22px">${fmt(m?.likes)}</div><div class="kpi-sub">across platforms</div></div>
-      <div class="kpi"><div class="kpi-lbl">Growth Rate</div><div class="kpi-val" style="font-size:22px">${m?.growth_rate!=null?m.growth_rate.toFixed(1)+'%':'—'}</div><div class="kpi-sub">period over period</div></div>
+      <div class="kpi"><div class="kpi-lbl">Growth Rate</div><div class="kpi-val" style="font-size:22px">${m?.growth_rate!=null?m.growth_rate.toFixed(1)+'%':'—'}</div><div class="kpi-sub">${period} over period</div></div>
     </div>`;
 }
 
