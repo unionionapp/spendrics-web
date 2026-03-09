@@ -188,7 +188,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
     }));
 
     // Redirect based on role
-    window.location.href = data.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+    window.location.href = 'dashboard.html';
 
   } catch (err) {
     document.getElementById('btn-text').style.display = 'block';
