@@ -406,10 +406,14 @@ if (session) {
 // ── API helper ────────────────────────────────────────────────
 async function api(path, opts = {}) {
   try {
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 60000);
     const res = await fetch(API + path, {
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers||{}) },
+      signal: controller.signal,
       ...opts
     });
+    clearTimeout(t);
     if (res.status === 401) { logout(); return null; }
     if (res.status === 204) return null;
     if (!res.ok) {
@@ -418,7 +422,8 @@ async function api(path, opts = {}) {
     }
     return res.json();
   } catch(err) {
-    if (err.name === 'TypeError') throw new Error('Network error');
+    if (err.name === 'AbortError') throw new Error('Request timed out — server may be waking up');
+    if (err.name === 'TypeError')  throw new Error('Network error');
     throw err;
   }
 }
