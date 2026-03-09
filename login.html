@@ -400,20 +400,47 @@ document.getElementById('login-form').addEventListener('submit', async function(
   if (!valid) return;
 
   // Loading state
-  document.getElementById('btn-text').style.display  = 'none';
-  document.getElementById('btn-arrow').style.display = 'none';
-  document.getElementById('spin').style.display      = 'block';
-  document.getElementById('submit-btn').disabled     = true;
+  const btnText  = document.getElementById('btn-text');
+  const btnArrow = document.getElementById('btn-arrow');
+  const spinEl   = document.getElementById('spin');
+  const submitBtn = document.getElementById('submit-btn');
+  btnText.style.display  = 'none';
+  btnArrow.style.display = 'none';
+  spinEl.style.display   = 'block';
+  submitBtn.disabled     = true;
+
+  // Wake-up hint after 5s (Render free tier cold start)
+  const wakeTimer = setTimeout(() => {
+    btnText.textContent = 'Waking up server…';
+    btnText.style.display = 'block';
+  }, 5000);
+
+  function resetBtn() {
+    clearTimeout(wakeTimer);
+    btnText.textContent    = 'Sign In';
+    btnText.style.display  = 'block';
+    btnArrow.style.display = 'block';
+    spinEl.style.display   = 'none';
+    submitBtn.disabled     = false;
+  }
 
   try {
-    const res  = await fetch(API + '/auth/login', {
-      method: 'POST',
+    // 70-second timeout (Render cold start can take ~60s)
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => controller.abort(), 70000);
+
+    const res = await fetch(API + '/auth/login', {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password: pass }),
+      body:    JSON.stringify({ email, password: pass }),
+      signal:  controller.signal,
     });
+    clearTimeout(timeoutId);
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Invalid email or password.');
 
+    clearTimeout(wakeTimer);
     localStorage.setItem('spr_token', data.access_token);
     localStorage.setItem('spr_session', JSON.stringify({
       id:           data.user.id,
@@ -427,11 +454,12 @@ document.getElementById('login-form').addEventListener('submit', async function(
     window.location.href = 'dashboard.html';
 
   } catch (err) {
-    document.getElementById('btn-text').style.display  = 'block';
-    document.getElementById('btn-arrow').style.display = 'block';
-    document.getElementById('spin').style.display      = 'none';
-    document.getElementById('submit-btn').disabled     = false;
-    showErr(err.message || 'Something went wrong. Please try again.');
+    resetBtn();
+    if (err.name === 'AbortError') {
+      showErr('Server took too long to respond. Please try again.');
+    } else {
+      showErr(err.message || 'Something went wrong. Please try again.');
+    }
   }
 });
 </script>
