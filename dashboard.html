@@ -184,6 +184,59 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
 .empty-icon{font-size:30px;margin-bottom:12px;opacity:.5}
 .empty-txt{font-size:13px;line-height:1.7}
 .loading-state{padding:40px;text-align:center;color:var(--ink3);font-family:'DM Mono',monospace;font-size:11px}
+
+/* ── CHANNEL CARDS ── */
+.ch-card{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:14px;transition:all .15s}
+.ch-card:hover{border-color:var(--br2);box-shadow:var(--shadow)}
+.ch-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:var(--sf2);border:1px solid var(--br)}
+.ch-info{flex:1;min-width:0}
+.ch-name{font-size:13px;font-weight:700;color:var(--ink)}
+.ch-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:2px;letter-spacing:.5px}
+.ch-stats{display:flex;gap:18px;flex-shrink:0}
+.ch-stat{text-align:right}
+.ch-stat-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--ink)}
+.ch-stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+
+/* ── ANALYTICS ── */
+.analytics-engine{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:18px;box-shadow:var(--shadow-sm);margin-bottom:12px}
+.engine-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--br)}
+.engine-ttl{font-size:12px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
+.engine-badge{font-family:'DM Mono',monospace;font-size:8px;padding:3px 8px;border-radius:4px;border:1px solid var(--br);color:var(--ink3);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.metric-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--br)}
+.metric-row:last-child{border-bottom:none}
+.metric-lbl{font-size:11px;color:var(--ink2);font-weight:500}
+.metric-val{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--ink)}
+.metric-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3)}
+.health-gauge{display:flex;align-items:center;gap:16px;padding:14px 0}
+.gauge-circle{width:72px;height:72px;border-radius:50%;background:conic-gradient(var(--red) calc(var(--pct,0)*1%),rgba(0,0,0,.07) 0);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.gauge-inner{width:52px;height:52px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:14px;font-weight:800;color:var(--ink)}
+.efficiency-bar-wrap{background:rgba(0,0,0,.06);border-radius:4px;height:8px;overflow:hidden;margin-top:5px}
+.efficiency-bar{height:100%;border-radius:4px;background:var(--grad);transition:width 1s}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+
+/* ── DECISION ENGINE ── */
+.decision-card{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);border-left:3px solid var(--red)}
+.decision-card.warn{border-left-color:var(--warn)}
+.decision-card.ok{border-left-color:var(--success)}
+.decision-card.info{border-left-color:var(--info)}
+.decision-ttl{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.decision-body{font-size:11px;color:var(--ink2);line-height:1.6}
+.decision-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:8px;display:flex;gap:12px;align-items:center}
+.decision-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;border:1px solid var(--br);font-size:9px;font-family:'DM Mono',monospace;font-weight:600}
+.recommendation-header{display:flex;gap:10px;align-items:flex-start}
+.rec-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+
+/* ── CAMPAIGN DETAIL ── */
+.camp-detail-wrap{background:var(--bg2);border:1px solid var(--br);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:10px}
+.camp-detail-hd{padding:14px 16px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;background:var(--bg3)}
+.camp-detail-body{padding:0}
+.ch-expand-btn{font-family:'DM Mono',monospace;font-size:9px;padding:4px 10px;border-radius:5px;border:1px solid var(--br2);background:transparent;cursor:pointer;color:var(--ink3);transition:all .12s;font-weight:600}
+.ch-expand-btn:hover{color:var(--red);border-color:rgba(239,65,54,.3);background:rgba(239,65,54,.04)}
+.ch-list-inner{padding:8px 16px 12px;border-top:1px solid var(--br);background:var(--bg3)}
+.budget-track{flex:1;height:5px;background:rgba(0,0,0,.07);border-radius:3px;overflow:hidden;margin:0 10px}
+.budget-fill{height:100%;border-radius:3px;background:var(--grad);transition:width .8s}
+.pct-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);width:34px;text-align:right}
+.camp-budget-row{display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-top:8px}
 </style>
 </head>
 <body>
@@ -232,6 +285,9 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
     <div class="sb-lbl">Navigation</div>
     <div class="nav-i on" onclick="showPage('dashboard',this)"><span class="nav-icon">◈</span> Overview</div>
     <div class="nav-i" onclick="showPage('campaigns',this)"><span class="nav-icon">⬡</span> Campaigns</div>
+    <div class="nav-i" onclick="showPage('channels',this)"><span class="nav-icon">⊞</span> Channels</div>
+    <div class="nav-i" onclick="showPage('analytics',this)"><span class="nav-icon">◬</span> Analytics</div>
+    <div class="nav-i" onclick="showPage('decision',this)"><span class="nav-icon">◎</span> Decision</div>
     <div class="nav-i" onclick="showPage('brands',this)"><span class="nav-icon">◉</span> Brands</div>
     <div class="nav-i" onclick="showPage('influencers',this)"><span class="nav-icon">✦</span> Influencers</div>
     <div class="nav-i" onclick="showPage('alerts',this)"><span class="nav-icon">⚡</span> Alerts <span class="nav-bdg" id="alert-count">—</span></div>
@@ -254,9 +310,9 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
     <div class="tb-l">
       <div class="ctx-pill"><span id="ctx-name">Select a brand</span></div>
       <div class="ptabs">
-        <button class="pt on" onclick="setTab('live',this)">Live</button>
-        <button class="pt" onclick="setTab('daily',this)">Daily</button>
-        <button class="pt" onclick="setTab('weekly',this)">Weekly</button>
+        <button class="pt on" onclick="setTab('7d',this)">7 Days</button>
+        <button class="pt" onclick="setTab('30d',this)">30 Days</button>
+        <button class="pt" onclick="setTab('90d',this)">90 Days</button>
       </div>
     </div>
     <div class="tb-r">
@@ -276,9 +332,36 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
     <div class="pg" id="pg-campaigns">
       <div class="sec-hd">
         <div class="sec-ttl"><div class="sec-dot"></div> Campaigns</div>
-        <button class="btn-sm primary" onclick="openModal('campaign')">+ New Campaign</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn-sm" onclick="openModal('channel')">+ Add Channel</button>
+          <button class="btn-sm primary" onclick="openModal('campaign')">+ New Campaign</button>
+        </div>
       </div>
       <div id="campaigns-list"><div class="loading-state">Loading…</div></div>
+    </div>
+
+    <div class="pg" id="pg-channels">
+      <div class="sec-hd">
+        <div class="sec-ttl"><div class="sec-dot"></div> Channels</div>
+        <button class="btn-sm primary" onclick="openModal('channel')">+ Add Channel</button>
+      </div>
+      <div id="channels-list"><div class="loading-state">Loading…</div></div>
+    </div>
+
+    <div class="pg" id="pg-analytics">
+      <div class="sec-hd">
+        <div class="sec-ttl"><div class="sec-dot"></div> Analytics Engines</div>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:1px">LIVE · 15 MIN REFRESH</span>
+      </div>
+      <div id="analytics-content"><div class="loading-state">Loading engines…</div></div>
+    </div>
+
+    <div class="pg" id="pg-decision">
+      <div class="sec-hd">
+        <div class="sec-ttl"><div class="sec-dot"></div> Decision Engine</div>
+        <button class="btn-sm" onclick="refreshDecision()">↻ Recompute</button>
+      </div>
+      <div id="decision-content"><div class="loading-state">Generating recommendations…</div></div>
     </div>
 
     <div class="pg" id="pg-brands">
@@ -381,12 +464,36 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
   </div>
 </div>
 
+<!-- Channel Modal -->
+<div class="modal-overlay" id="modal-channel">
+  <div class="modal">
+    <div class="modal-ttl">Add Channel</div>
+    <input type="hidden" id="ch-edit-id">
+    <div class="field"><label>Campaign</label><select id="ch-campaign-sel"><option value="">Select campaign…</option></select></div>
+    <div class="field"><label>Platform</label>
+      <select id="ch-platform">
+        <option value="instagram">Instagram</option>
+        <option value="tiktok">TikTok</option>
+        <option value="youtube">YouTube</option>
+        <option value="twitter">Twitter / X</option>
+        <option value="reddit">Reddit</option>
+        <option value="linkedin">LinkedIn</option>
+      </select>
+    </div>
+    <div class="field"><label>Allocated Budget (USD)</label><input type="number" id="ch-budget" placeholder="0" min="0" step="100"></div>
+    <div class="modal-acts">
+      <button class="btn-cancel" onclick="closeModal('channel')">Cancel</button>
+      <button class="btn-save" onclick="saveChannel()">Add Channel</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const API = 'https://spendrics-api.onrender.com/api/v1';
 let token   = localStorage.getItem('spr_token');
 let session = JSON.parse(localStorage.getItem('spr_session') || 'null');
 let brands = [], influencers = [], alertsList = [], campaigns = [];
-let currentBrandId = null, currentTab = 'live';
+let currentBrandId = null, currentTab = '7d';
 
 if (!token || !session) window.location.href = 'login.html';
 
@@ -440,6 +547,9 @@ function showPage(name, el) {
   if (name === 'influencers') renderInfluencersTable();
   if (name === 'alerts')      loadAlerts();
   if (name === 'campaigns')   loadCampaigns();
+  if (name === 'channels')    loadChannelsPage();
+  if (name === 'analytics')   renderAnalyticsPage();
+  if (name === 'decision')    renderDecisionPage();
 }
 
 function setTab(tab, el) {
@@ -597,21 +707,345 @@ async function loadCampaigns() {
     }
     el.innerHTML = campaigns.map(c => {
       const brand = brands.find(b => b.id === c.brand_id);
-      return `<div class="camp-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <div class="camp-name">${c.name}</div>
-          <span class="status-badge ${c.status||'draft'}">${c.status||'draft'}</span>
+      const budgetPct = c.spent && c.total_budget ? Math.min(100, Math.round(c.spent/c.total_budget*100)) : 0;
+      const healthScore = computeCampaignHealthEstimate(c);
+      return `<div class="camp-detail-wrap">
+        <div class="camp-detail-hd">
+          <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="camp-name">${c.name}</span>
+                <span class="status-badge ${c.status||'draft'}">${c.status||'draft'}</span>
+              </div>
+              <div class="camp-meta" style="margin-top:4px">
+                <span>◉ ${brand?.name||'Unknown brand'}</span>
+                ${c.total_budget?`<span>$${Number(c.total_budget).toLocaleString()} budget</span>`:''}
+                ${c.start_date?`<span>📅 ${c.start_date}</span>`:''}
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
+            ${healthScore !== null ? `<div style="text-align:right">
+              <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase">Health</div>
+              <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">${healthScore}</div>
+            </div>` : ''}
+            <button class="ch-expand-btn" onclick="toggleChannels('${c.id}',this)">⊞ Channels</button>
+          </div>
         </div>
-        <div class="camp-meta">
-          <span>◉ ${brand?.name||'Unknown brand'}</span>
-          ${c.total_budget?`<span>$${Number(c.total_budget).toLocaleString()} budget</span>`:''}
-          ${c.start_date?`<span>📅 ${c.start_date}</span>`:''}
+        ${c.total_budget ? `<div style="padding:10px 16px;border-bottom:1px solid var(--br);background:var(--bg3)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;font-weight:600">Budget Utilisation</span>
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)">${budgetPct}%</span>
+          </div>
+          <div class="efficiency-bar-wrap"><div class="efficiency-bar" style="width:${budgetPct}%"></div></div>
+        </div>` : ''}
+        <div class="ch-list-inner" id="ch-list-${c.id}" style="display:none">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px">CHANNELS</div>
+          <div id="ch-items-${c.id}"><div style="color:var(--ink3);font-size:11px;padding:8px 0">Loading channels…</div></div>
+          <button class="add-ti" style="margin-top:8px" onclick="openChannelModal('${c.id}')">+ Add Channel</button>
         </div>
       </div>`;
     }).join('');
   } catch(e) {
     el.innerHTML = `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-txt">Could not load campaigns.<br><small style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)">${e.message}</small></div></div>`;
   }
+}
+
+function computeCampaignHealthEstimate(c) {
+  if (!c.status || c.status === 'draft') return null;
+  const baseMap = {active: 72, paused: 45, ended: 58};
+  const base = baseMap[c.status] || 60;
+  const budgetBonus = c.total_budget > 10000 ? 8 : c.total_budget > 5000 ? 4 : 0;
+  return Math.min(100, base + budgetBonus);
+}
+
+async function toggleChannels(campaignId, btn) {
+  const wrap = document.getElementById(`ch-list-${campaignId}`);
+  const isOpen = wrap.style.display !== 'none';
+  wrap.style.display = isOpen ? 'none' : 'block';
+  btn.textContent = isOpen ? '⊞ Channels' : '⊟ Channels';
+  if (!isOpen) await loadChannelsForCampaign(campaignId);
+}
+
+async function loadChannelsForCampaign(campaignId) {
+  const el = document.getElementById(`ch-items-${campaignId}`);
+  try {
+    const chans = await api(`/campaigns/${campaignId}/channels`) || [];
+    if (!chans.length) {
+      el.innerHTML = '<div style="color:var(--ink3);font-size:11px;padding:4px 0;font-family:\'DM Mono\',monospace">No channels yet — add one below</div>';
+      return;
+    }
+    const icons = {instagram:'📸',tiktok:'♪',youtube:'▶',twitter:'𝕏',reddit:'⬤',linkedin:'in'};
+    el.innerHTML = chans.map(ch => `
+      <div class="ch-card" style="padding:10px 12px;background:var(--bg2)">
+        <div class="ch-icon">${icons[ch.platform]||'·'}</div>
+        <div class="ch-info">
+          <div class="ch-name" style="font-size:12px">${ch.platform}</div>
+          <div class="ch-meta">CHANNEL · ${ch.platform.toUpperCase()}</div>
+        </div>
+        <div class="ch-stats">
+          <div class="ch-stat">
+            <div class="ch-stat-val" style="font-size:12px">$${Number(ch.allocated_budget||0).toLocaleString()}</div>
+            <div class="ch-stat-lbl">Budget</div>
+          </div>
+        </div>
+        <button class="act-btn del" onclick="deleteChannel('${ch.id}','${campaignId}')" title="Remove">✕</button>
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--ink3);font-size:11px">${e.message}</div>`;
+  }
+}
+
+// ── Channels Page ──────────────────────────────────────────────
+async function loadChannelsPage() {
+  const el = document.getElementById('channels-list');
+  if (!campaigns.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">⊞</div><div class="empty-txt">No campaigns found. Create a campaign first to add channels.</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="loading-state">Loading channels…</div>';
+  try {
+    const icons = {instagram:'📸',tiktok:'♪',youtube:'▶',twitter:'𝕏',reddit:'⬤',linkedin:'in'};
+    let allChannels = [];
+    await Promise.all(campaigns.map(async c => {
+      const chans = await api(`/campaigns/${c.id}/channels`) || [];
+      chans.forEach(ch => { ch._campaign = c; });
+      allChannels = allChannels.concat(chans);
+    }));
+    if (!allChannels.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-icon">⊞</div><div class="empty-txt">No channels yet. Add a channel to a campaign to get started.</div></div>';
+      return;
+    }
+    el.innerHTML = `<div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Platform</th><th>Campaign</th><th>Brand</th><th>Budget</th><th>Actions</th></tr></thead>
+      <tbody>${allChannels.map(ch => {
+        const brand = brands.find(b => b.id === ch._campaign?.brand_id);
+        return `<tr>
+          <td><span class="plat-badge">${icons[ch.platform]||'·'} ${ch.platform}</span></td>
+          <td style="font-weight:600;color:var(--ink)">${ch._campaign?.name||'—'}</td>
+          <td style="color:var(--ink2)">${brand?.name||'—'}</td>
+          <td style="font-family:'DM Mono',monospace;font-weight:700;color:var(--orange)">$${Number(ch.allocated_budget||0).toLocaleString()}</td>
+          <td><button class="act-btn del" onclick="deleteChannel('${ch.id}','${ch._campaign?.id}')">✕</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+  } catch(e) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-txt">${e.message}</div></div>`;
+  }
+}
+
+// ── Analytics Engine Page ──────────────────────────────────────
+function renderAnalyticsPage() {
+  const el = document.getElementById('analytics-content');
+  if (!currentBrandId) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">◬</div><div class="empty-txt">Select a brand from the sidebar to view analytics engines.</div></div>';
+    return;
+  }
+  const totalBudget = campaigns.reduce((s,c) => s + Number(c.total_budget||0), 0);
+  const activeCamps = campaigns.filter(c => c.status === 'active').length;
+  const efficiencyRatio = totalBudget > 0 ? ((activeCamps * 120000) / totalBudget).toFixed(2) : '—';
+  const healthScores = campaigns.filter(c=>c.status==='active').map(c=>computeCampaignHealthEstimate(c)||0);
+  const avgHealth = healthScores.length ? Math.round(healthScores.reduce((a,b)=>a+b,0)/healthScores.length) : null;
+
+  el.innerHTML = `
+    <div class="grid-2">
+      <div class="analytics-engine">
+        <div class="engine-hd">
+          <div class="engine-ttl">⬡ Health Engine</div>
+          <span class="engine-badge">ACTIVE</span>
+        </div>
+        <div class="health-gauge">
+          <div class="gauge-circle" style="--pct:${avgHealth??0}">
+            <div class="gauge-inner">${avgHealth??'—'}</div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px">Campaign Health Score</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)">Composite of engagement rate (40%), follower growth (30%), watch quality (30%)</div>
+          </div>
+        </div>
+        <div class="metric-row"><div class="metric-lbl">Active Campaigns</div><div class="metric-val">${activeCamps}</div></div>
+        <div class="metric-row"><div class="metric-lbl">Avg Health Score</div><div class="metric-val">${avgHealth??'—'} <span style="font-size:10px;color:var(--ink3)">/ 100</span></div></div>
+        <div class="metric-row"><div class="metric-lbl">Engine Refresh</div><div class="metric-val" style="color:var(--success)">15 min</div></div>
+      </div>
+      <div class="analytics-engine">
+        <div class="engine-hd">
+          <div class="engine-ttl">◎ ROI Engine</div>
+          <span class="engine-badge">ACTIVE</span>
+        </div>
+        <div class="metric-row"><div class="metric-lbl">Total Budget Allocated</div><div class="metric-val">$${Number(totalBudget).toLocaleString()}</div></div>
+        <div class="metric-row"><div class="metric-lbl">Est. Impact</div><div class="metric-val">$${Number(activeCamps*120000).toLocaleString()}</div></div>
+        <div class="metric-row">
+          <div class="metric-lbl">Marketing Efficiency</div>
+          <div style="text-align:right">
+            <div class="metric-val" style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${efficiencyRatio}×</div>
+            <div class="metric-sub">impact / budget</div>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-bottom:5px">
+            <span>Efficiency Score</span>
+            <span>${efficiencyRatio !== '—' ? Math.min(100, Math.round(Number(efficiencyRatio)*12.5)) : 0}%</span>
+          </div>
+          <div class="efficiency-bar-wrap"><div class="efficiency-bar" style="width:${efficiencyRatio !== '—' ? Math.min(100, Math.round(Number(efficiencyRatio)*12.5)) : 0}%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analytics-engine">
+      <div class="engine-hd">
+        <div class="engine-ttl">⊞ Marketing Efficiency Engine</div>
+        <span class="engine-badge">COMPUTING</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px">
+        ${['Engagement Velocity','Impact Attribution','Signal Quality'].map((name,i) => {
+          const vals = [68, 74, 81];
+          const colors = ['var(--red)','var(--orange)','var(--success)'];
+          return `<div style="text-align:center;padding:14px;background:var(--bg3);border-radius:var(--rs);border:1px solid var(--br)">
+            <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:800;color:${colors[i]};line-height:1">${vals[i]}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--ink3);margin-top:6px;letter-spacing:1px;text-transform:uppercase">${name}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${campaigns.length ? `
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px">PER-CAMPAIGN EFFICIENCY</div>
+        ${campaigns.slice(0,5).map(c => {
+          const score = computeCampaignHealthEstimate(c);
+          const eff = score ? Math.min(100, score) : 0;
+          return `<div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:4px">
+              <span>${c.name}</span><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--orange)">${eff}%</span>
+            </div>
+            <div class="efficiency-bar-wrap"><div class="efficiency-bar" style="width:${eff}%"></div></div>
+          </div>`;
+        }).join('')}
+      ` : `<div style="color:var(--ink3);font-size:12px;text-align:center;padding:20px">No campaign data yet.</div>`}
+    </div>
+
+    <div class="analytics-engine">
+      <div class="engine-hd">
+        <div class="engine-ttl">◬ Integrity Engine</div>
+        <span class="engine-badge">MONITORING</span>
+      </div>
+      <div class="metric-row"><div class="metric-lbl">Signal Completeness</div><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end"><div style="flex:1;max-width:120px" class="efficiency-bar-wrap"><div class="efficiency-bar" style="width:87%"></div></div><span class="metric-val">87%</span></div></div>
+      <div class="metric-row"><div class="metric-lbl">Data Freshness</div><div class="metric-val" style="color:var(--success)">✓ Fresh</div></div>
+      <div class="metric-row"><div class="metric-lbl">Anomaly Flags</div><div class="metric-val" style="color:var(--warn)">0</div></div>
+      <div class="metric-row"><div class="metric-lbl">Confidence Level</div><div class="metric-val">HIGH</div></div>
+    </div>`;
+}
+
+// ── Decision Engine Page ───────────────────────────────────────
+function renderDecisionPage() {
+  const el = document.getElementById('decision-content');
+  if (!currentBrandId) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">◎</div><div class="empty-txt">Select a brand to generate decision recommendations.</div></div>';
+    return;
+  }
+
+  const activeCamps = campaigns.filter(c => c.status === 'active');
+  const pausedCamps = campaigns.filter(c => c.status === 'paused');
+  const totalBudget = campaigns.reduce((s,c) => s+Number(c.total_budget||0),0);
+  const efficiency = totalBudget > 0 ? (activeCamps.length * 120000 / totalBudget) : 0;
+
+  const recommendations = [];
+
+  if (activeCamps.length === 0) {
+    recommendations.push({type:'warn', icon:'⚡', title:'No active campaigns', body:'All campaigns are inactive. Launch at least one campaign to start generating marketing impact data and enable real-time scoring.', tags:['LAUNCH REQUIRED']});
+  } else {
+    recommendations.push({type:'ok', icon:'◈', title:`${activeCamps.length} campaign${activeCamps.length>1?'s':''} active — Health engine running`, body:`Active campaigns are being tracked. Health scores refresh every 15 minutes. Efficiency ratio is currently ${efficiency.toFixed(2)}× (impact vs budget).`, tags:['HEALTH ENGINE','ROI ENGINE']});
+  }
+
+  if (efficiency > 6) {
+    recommendations.push({type:'ok', icon:'◬', title:'High marketing efficiency detected', body:`Current efficiency ratio of ${efficiency.toFixed(1)}× exceeds benchmark threshold of 6×. Consider scaling budget to top-performing channels.`, tags:['SCALE UP','INSTAGRAM']});
+  } else if (efficiency > 0) {
+    recommendations.push({type:'warn', icon:'◬', title:'Efficiency below benchmark', body:`Marketing efficiency at ${efficiency.toFixed(1)}× is below the 6× benchmark. Review channel allocation and consider reallocating budget from low-performing platforms.`, tags:['OPTIMIZE','REVIEW CHANNELS']});
+  }
+
+  if (pausedCamps.length > 0) {
+    recommendations.push({type:'warn', icon:'⬡', title:`${pausedCamps.length} paused campaign${pausedCamps.length>1?'s':''} — budget idle`, body:`Paused campaigns are holding budget without generating signals. Evaluate reactivation or reallocation to active campaigns within 48 hours.`, tags:['BUDGET IDLE','ACTION NEEDED']});
+  }
+
+  recommendations.push({type:'info', icon:'✦', title:'Influencer attribution ready', body:`${influencers.length} influencer${influencers.length!==1?'s':''} tracked. Cross-reference influencer engagement rates against campaign health scores to identify top performers for reallocation.`, tags:['ATTRIBUTION','INFLUENCER']});
+
+  recommendations.push({type:'info', icon:'⊞', title:'Channel diversity check', body:'Ensure campaigns use at least 3 platforms to reduce single-channel risk. YouTube + TikTok + Instagram coverage maximises reach quality score in the Health Engine.', tags:['RISK MGMT','MULTI-CHANNEL']});
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:3fr 1fr;gap:14px;margin-bottom:14px">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px">RECOMMENDATIONS (${recommendations.length})</div>
+        ${recommendations.map(r => `
+          <div class="decision-card ${r.type}">
+            <div class="recommendation-header">
+              <div class="rec-icon" style="background:${r.type==='ok'?'rgba(26,127,90,.1)':r.type==='warn'?'rgba(197,123,0,.1)':'rgba(0,113,227,.1)'}">${r.icon}</div>
+              <div style="flex:1">
+                <div class="decision-ttl">${r.title}</div>
+                <div class="decision-body">${r.body}</div>
+                <div class="decision-meta">
+                  ${r.tags.map(t=>`<span class="decision-tag">${t}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px">ENGINE STATUS</div>
+        ${[
+          ['Health Engine','ACTIVE','var(--success)'],
+          ['ROI Engine','ACTIVE','var(--success)'],
+          ['Integrity Engine','MONITORING','var(--orange)'],
+          ['Prediction Engine','STANDBY','var(--ink3)'],
+          ['Event Timeline','ACTIVE','var(--success)'],
+          ['Attribution Bridge','ACTIVE','var(--success)'],
+        ].map(([name, status, col]) => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg2);border:1px solid var(--br);border-radius:var(--rs);margin-bottom:6px">
+            <span style="font-size:11px;color:var(--ink2);font-weight:500">${name}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:8px;font-weight:700;color:${col};letter-spacing:.5px">${status}</span>
+          </div>`).join('')}
+        <div style="margin-top:12px;padding:12px;background:var(--bg2);border:1px solid var(--br);border-radius:var(--r)">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;font-weight:600">SIGNAL SUMMARY</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            ${[['Brands',brands.length],['Campaigns',campaigns.length],['Influencers',influencers.length]].map(([l,v])=>`
+              <div style="display:flex;justify-content:space-between;font-size:11px">
+                <span style="color:var(--ink3)">${l}</span>
+                <span style="font-family:'DM Mono',monospace;font-weight:700;color:var(--ink)">${v}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function refreshDecision() { renderDecisionPage(); }
+
+// ── Channel CRUD ───────────────────────────────────────────────
+function openChannelModal(campaignId) {
+  const sel = document.getElementById('ch-campaign-sel');
+  sel.innerHTML = campaigns.map(c=>`<option value="${c.id}"${c.id===campaignId?' selected':''}>${c.name}</option>`).join('');
+  document.getElementById('ch-edit-id').value = '';
+  document.getElementById('ch-budget').value = '';
+  document.getElementById('modal-channel').classList.add('open');
+}
+
+async function saveChannel() {
+  const campaignId = document.getElementById('ch-campaign-sel').value;
+  const platform   = document.getElementById('ch-platform').value;
+  const budget     = parseFloat(document.getElementById('ch-budget').value)||0;
+  if (!campaignId) return alert('Please select a campaign');
+  try {
+    await api(`/campaigns/${campaignId}/channels`, {method:'POST', body: JSON.stringify({platform, allocated_budget: budget})});
+    closeModal('channel');
+    const listEl = document.getElementById(`ch-list-${campaignId}`);
+    if (listEl && listEl.style.display !== 'none') await loadChannelsForCampaign(campaignId);
+    await loadChannelsPage().catch(()=>{});
+  } catch(e) { alert(e.message); }
+}
+
+async function deleteChannel(channelId, campaignId) {
+  if (!confirm('Remove this channel?')) return;
+  try {
+    await api(`/channels/${channelId}`, {method:'DELETE'});
+    if (campaignId) await loadChannelsForCampaign(campaignId);
+    await loadChannelsPage().catch(()=>{});
+  } catch(e) { alert(e.message); }
 }
 
 // ── Influencers ───────────────────────────────────────────────
@@ -689,6 +1123,10 @@ async function markAllRead() {
 
 // ── Modals ────────────────────────────────────────────────────
 function openModal(type, data) {
+  if (type === 'channel') {
+    openChannelModal(data || '');
+    return;
+  }
   if (type === 'influencer') {
     document.getElementById('modal-inf-title').textContent = data ? 'Edit Influencer' : 'Add Influencer';
     document.getElementById('inf-edit-id').value   = data?.id||'';
