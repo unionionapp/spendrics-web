@@ -165,6 +165,18 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
 .field input:focus,.field select:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(239,65,54,.1)}
 .field-input-err{border-color:var(--danger)!important;box-shadow:0 0 0 3px rgba(217,48,37,.12)!important}
 .field-error{font-family:'DM Mono',monospace;font-size:10px;color:var(--danger);margin-top:5px;font-weight:600}
+
+/* ── COLOR SWATCHES ── */
+.color-swatch{width:28px;height:28px;border-radius:7px;cursor:pointer;border:2px solid transparent;transition:all .12s;position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.color-swatch:hover{transform:scale(1.12)}
+.color-swatch.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--bg2),0 0 0 4px var(--ink)}
+.color-swatch.custom-swatch{background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);overflow:hidden}
+
+/* ── EMOJI GRID ── */
+#emoji-grid{line-height:1}
+.emoji-btn{width:34px;height:34px;border-radius:8px;border:2px solid transparent;background:var(--bg3);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.emoji-btn:hover{background:var(--sf2);transform:scale(1.15)}
+.emoji-btn.on{border-color:var(--red);background:rgba(239,65,54,.08)}
 .field select option{background:var(--bg2);color:var(--ink)}
 .modal-acts{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--br)}
 .btn-cancel{font-family:'DM Mono',monospace;font-size:11px;padding:8px 16px;border-radius:8px;cursor:pointer;border:1px solid var(--br2);background:var(--bg2);color:var(--ink3);transition:all .12s;font-weight:500}
@@ -405,13 +417,68 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
 
 <!-- Brand Modal -->
 <div class="modal-overlay" id="modal-brand">
-  <div class="modal">
+  <div class="modal" style="width:480px">
     <div class="modal-ttl" id="modal-brand-title">Add Brand</div>
     <input type="hidden" id="brand-edit-id">
-    <div class="field"><label>Brand Name</label><input type="text" id="brand-name" placeholder="e.g. Nike"></div>
-    <div class="field"><label>Handle / Hashtag</label><input type="text" id="brand-handle" placeholder="e.g. @nike"></div>
-    <div class="field"><label>Color (hex)</label><input type="text" id="brand-color" placeholder="#ef4136"></div>
-    <div class="field"><label>Emoji</label><input type="text" id="brand-emoji" placeholder="🔥"></div>
+
+    <div class="field">
+      <label>Brand Name</label>
+      <input type="text" id="brand-name" placeholder="e.g. Nike" autocomplete="off">
+    </div>
+
+    <!-- Dual handle -->
+    <div class="field">
+      <label>Social Handles</label>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1;position:relative">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-family:'DM Mono',monospace;font-size:13px;color:var(--ink3);pointer-events:none">@</span>
+          <input type="text" id="brand-handle-at" placeholder="username" style="padding-left:26px" autocomplete="off">
+        </div>
+        <div style="flex:1;position:relative">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-family:'DM Mono',monospace;font-size:13px;color:var(--ink3);pointer-events:none">#</span>
+          <input type="text" id="brand-handle-hash" placeholder="hashtag" style="padding-left:26px" autocomplete="off">
+        </div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink3);margin-top:5px;letter-spacing:.5px">At least one handle required</div>
+    </div>
+
+    <!-- Color swatches -->
+    <div class="field">
+      <label>Brand Color</label>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px" id="color-swatches">
+        <div class="color-swatch on" data-color="#ef4136" style="background:#ef4136"></div>
+        <div class="color-swatch" data-color="#e8702a" style="background:#e8702a"></div>
+        <div class="color-swatch" data-color="#f5a623" style="background:#f5a623"></div>
+        <div class="color-swatch" data-color="#27ae60" style="background:#27ae60"></div>
+        <div class="color-swatch" data-color="#0071e3" style="background:#0071e3"></div>
+        <div class="color-swatch" data-color="#8e44ad" style="background:#8e44ad"></div>
+        <div class="color-swatch" data-color="#e91e8c" style="background:#e91e8c"></div>
+        <div class="color-swatch" data-color="#1abc9c" style="background:#1abc9c"></div>
+        <div class="color-swatch" data-color="#2c3e50" style="background:#2c3e50"></div>
+        <div class="color-swatch" data-color="#e74c3c" style="background:#e74c3c"></div>
+        <div class="color-swatch" data-color="#f39c12" style="background:#f39c12"></div>
+        <div class="color-swatch custom-swatch" title="Custom color">
+          <input type="color" id="brand-color-custom" value="#ef4136" style="opacity:0;position:absolute;inset:0;cursor:pointer;width:100%;height:100%;border:none">
+          <span style="font-size:12px;pointer-events:none">+</span>
+        </div>
+      </div>
+      <input type="hidden" id="brand-color" value="#ef4136">
+    </div>
+
+    <!-- Emoji picker -->
+    <div class="field">
+      <label>Brand Emoji</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="emoji-grid">
+        🔥 ⚡ 🚀 💎 🌟 ✨ 🎯 💡 🔮 🎨 🏆 💪 🦁 🐯 🌊 🍀 🎵 🎸 👑 🤖 🌈 💫 🔑 🛡️ 🌸
+      </div>
+      <input type="hidden" id="brand-emoji" value="🔥">
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)">Selected:</span>
+        <span id="emoji-preview" style="font-size:22px;line-height:1">🔥</span>
+        <input type="text" id="brand-emoji-custom" placeholder="or type any emoji…" style="flex:1;font-size:13px" maxlength="8">
+      </div>
+    </div>
+
     <div class="modal-acts">
       <button class="btn-cancel" onclick="closeModal('brand')">Cancel</button>
       <button class="btn-save" onclick="saveBrand()">Save Brand</button>
@@ -1227,42 +1294,123 @@ function openModal(type, data) {
     document.getElementById('modal-brand-title').textContent = data ? 'Edit Brand' : 'Add Brand';
     document.getElementById('brand-edit-id').value = data?.id||'';
     document.getElementById('brand-name').value    = data?.name||'';
-    document.getElementById('brand-handle').value  = data?.handle||'';
-    document.getElementById('brand-color').value   = data?.color||'#ef4136';
-    document.getElementById('brand-emoji').value   = data?.emoji||'🔥';
+
+    // Parse handle — split @ and # parts
+    const handle = data?.handle||'';
+    const atPart   = handle.split(' ').find(h=>h.startsWith('@'))||'';
+    const hashPart = handle.split(' ').find(h=>h.startsWith('#'))||'';
+    document.getElementById('brand-handle-at').value   = atPart.replace('@','');
+    document.getElementById('brand-handle-hash').value = hashPart.replace('#','');
+
+    // Color swatches
+    const color = data?.color||'#ef4136';
+    document.getElementById('brand-color').value = color;
+    document.getElementById('brand-color-custom').value = color;
+    initColorSwatches(color);
+
+    // Emoji
+    const emoji = data?.emoji||'🔥';
+    document.getElementById('brand-emoji').value = emoji;
+    document.getElementById('brand-emoji-custom').value = '';
+    initEmojiGrid(emoji);
+
+    // Clear errors
+    document.querySelectorAll('.field-error').forEach(e=>e.remove());
+    document.querySelectorAll('.field-input-err').forEach(e=>e.classList.remove('field-input-err'));
+
     document.getElementById('modal-brand').classList.add('open');
   }
 }
 
-function closeModal(type) { document.getElementById('modal-'+type).classList.remove('open'); }
+function initColorSwatches(selected) {
+  document.querySelectorAll('.color-swatch[data-color]').forEach(sw => {
+    sw.classList.toggle('on', sw.dataset.color === selected);
+    sw.onclick = () => {
+      document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('on'));
+      sw.classList.add('on');
+      document.getElementById('brand-color').value = sw.dataset.color;
+      document.getElementById('brand-color-custom').value = sw.dataset.color;
+    };
+  });
+  // Custom color picker
+  const custom = document.getElementById('brand-color-custom');
+  custom.oninput = () => {
+    document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('on'));
+    document.querySelector('.custom-swatch').classList.add('on');
+    document.getElementById('brand-color').value = custom.value;
+  };
+}
+
+function initEmojiGrid(selected) {
+  const emojis = ['🔥','⚡','🚀','💎','🌟','✨','🎯','💡','🔮','🎨','🏆','💪','🦁','🐯','🌊','🍀','🎵','🎸','👑','🤖','🌈','💫','🔑','🛡️','🌸'];
+  const grid = document.getElementById('emoji-grid');
+  grid.innerHTML = emojis.map(e => `<button type="button" class="emoji-btn${e===selected?' on':''}" onclick="selectEmoji('${e}')">${e}</button>`).join('');
+  document.getElementById('emoji-preview').textContent = selected;
+
+  // Custom emoji input
+  const customInput = document.getElementById('brand-emoji-custom');
+  customInput.oninput = () => {
+    const val = [...customInput.value].slice(-2).join(''); // take last emoji
+    if (val) {
+      document.querySelectorAll('.emoji-btn').forEach(b=>b.classList.remove('on'));
+      document.getElementById('brand-emoji').value = val;
+      document.getElementById('emoji-preview').textContent = val;
+    }
+  };
+}
+
+function selectEmoji(e) {
+  document.querySelectorAll('.emoji-btn').forEach(b=>b.classList.remove('on'));
+  event.currentTarget.classList.add('on');
+  document.getElementById('brand-emoji').value = e;
+  document.getElementById('emoji-preview').textContent = e;
+  document.getElementById('brand-emoji-custom').value = '';
+}
+
+function closeModal(type) {
+  document.getElementById('modal-'+type).classList.remove('open');
+}
 document.querySelectorAll('.modal-overlay').forEach(el => {
   el.addEventListener('click', e => { if (e.target===el) el.classList.remove('open'); });
 });
 
 // ── Brand CRUD ────────────────────────────────────────────────
 async function saveBrand() {
-  const id   = document.getElementById('brand-edit-id').value;
+  const id = document.getElementById('brand-edit-id').value;
+
+  const atVal   = document.getElementById('brand-handle-at').value.trim().replace(/^@/,'');
+  const hashVal = document.getElementById('brand-handle-hash').value.trim().replace(/^#/,'');
+  if (!atVal && !hashVal) return showFieldError('brand-handle-at', 'At least one handle required');
+
+  // Build combined handle string: "@nike #nike"
+  const handleParts = [];
+  if (atVal)   handleParts.push('@' + atVal);
+  if (hashVal) handleParts.push('#' + hashVal);
+  const handle = handleParts.join(' ');
+
   const body = {
     name:   document.getElementById('brand-name').value.trim(),
-    handle: document.getElementById('brand-handle').value.trim(),
-    color:  document.getElementById('brand-color').value.trim()||'#ef4136',
-    emoji:  document.getElementById('brand-emoji').value.trim()||'🔥'
+    handle,
+    color:  document.getElementById('brand-color').value||'#ef4136',
+    emoji:  document.getElementById('brand-emoji').value||'🔥'
   };
   if (!body.name) return showFieldError('brand-name', 'Brand name is required');
 
-  // Duplicate check — aynı name veya handle varsa engelle (edit modunda kendisi hariç)
+  // Duplicate check
   const nameLower   = body.name.toLowerCase();
-  const handleLower = body.handle.toLowerCase();
+  const handleLower = handle.toLowerCase();
   const duplicate = brands.find(b => {
-    if (id && b.id === id) return false; // edit modunda kendisini atla
+    if (id && b.id === id) return false;
     const sameName   = b.name?.toLowerCase() === nameLower;
-    const sameHandle = body.handle && b.handle?.toLowerCase() === handleLower;
+    const sameHandle = b.handle?.toLowerCase().split(' ').some(h =>
+      handleLower.split(' ').includes(h)
+    );
     return sameName || sameHandle;
   });
   if (duplicate) {
     const conflict = duplicate.name?.toLowerCase() === nameLower ? 'name' : 'handle';
     return showFieldError(
-      conflict === 'name' ? 'brand-name' : 'brand-handle',
+      conflict === 'name' ? 'brand-name' : 'brand-handle-at',
       `"${duplicate.name}" already exists with this ${conflict}`
     );
   }
