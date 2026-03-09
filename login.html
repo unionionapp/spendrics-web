@@ -18,8 +18,7 @@
 html,body{height:100%}
 body{font-family:'Bricolage Grotesque',sans-serif;background:#0c056d;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;overflow:hidden}
 
-/* BG grid */
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+/* BG grid removed */
 /* BG glow */
 body::after{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(239,65,54,.12) 0%,rgba(251,176,64,.06) 50%,transparent 70%);pointer-events:none}
 
@@ -28,7 +27,7 @@ body::after{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50
 .back:hover{background:rgba(255,255,255,.15);color:#fff;transform:scale(1.05)}
 
 /* Card */
-.card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:44px 40px;width:100%;max-width:420px;position:relative;z-index:1;box-shadow:0 32px 80px rgba(0,0,0,.4),0 0 80px rgba(239,65,54,.08)}
+.card{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:44px 40px;width:100%;max-width:420px;position:relative;z-index:1;box-shadow:0 32px 80px rgba(0,0,0,.4),0 0 80px rgba(239,65,54,.08)}
 .card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(251,176,64,.5),transparent)}
 
 /* Logo */
@@ -182,15 +181,14 @@ document.getElementById('login-form').addEventListener('submit', async function(
     localStorage.setItem('spr_token', data.access_token);
     localStorage.setItem('spr_session', JSON.stringify({
       id: data.user.id,
-      display_name: data.user.display_name,
-      name: data.user.display_name || data.user.email,
+      name: data.user.name,
       email: data.user.email,
       role: data.user.role,
-      plan: data.user.plan || 'free'
+      plan: data.user.plan
     }));
 
     // Redirect based on role
-    window.location.href = (data.user.role === 'admin' || data.user.role === 'owner') ? 'admin.html' : 'dashboard.html';
+    window.location.href = data.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
 
   } catch (err) {
     document.getElementById('btn-text').style.display = 'block';
