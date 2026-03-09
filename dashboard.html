@@ -75,6 +75,7 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
 .live-pill{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:10px;color:var(--success);background:rgba(26,127,90,.08);border:1px solid rgba(26,127,90,.2);padding:3px 9px;border-radius:20px;font-weight:600}
 .live-dot{width:5px;height:5px;background:var(--success);border-radius:50%;animation:blink 1.4s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .ts-el{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)}
 .ib{width:30px;height:30px;border-radius:var(--rs);background:var(--bg3);border:1px solid var(--br);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink3);transition:all .12s}
 .ib:hover{border-color:var(--br2);color:var(--ink)}
@@ -162,6 +163,8 @@ body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var
 .field label{display:block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:6px;font-weight:600}
 .field input,.field select{width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--br2);border-radius:9px;color:var(--ink);font-family:inherit;font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
 .field input:focus,.field select:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(239,65,54,.1)}
+.field-input-err{border-color:var(--danger)!important;box-shadow:0 0 0 3px rgba(217,48,37,.12)!important}
+.field-error{font-family:'DM Mono',monospace;font-size:10px;color:var(--danger);margin-top:5px;font-weight:600}
 .field select option{background:var(--bg2);color:var(--ink)}
 .modal-acts{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--br)}
 .btn-cancel{font-family:'DM Mono',monospace;font-size:11px;padding:8px 16px;border-radius:8px;cursor:pointer;border:1px solid var(--br2);background:var(--bg2);color:var(--ink3);transition:all .12s;font-weight:500}
@@ -511,28 +514,75 @@ if (session) {
 }
 
 // ── API helper ────────────────────────────────────────────────
-async function api(path, opts = {}) {
-  try {
-    const controller = new AbortController();
-    const t = setTimeout(() => controller.abort(), 60000);
-    const res = await fetch(API + path, {
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers||{}) },
-      signal: controller.signal,
-      ...opts
-    });
-    clearTimeout(t);
-    if (res.status === 401) { logout(); return null; }
-    if (res.status === 204) return null;
-    if (!res.ok) {
-      const e = await res.json().catch(() => ({}));
-      throw new Error(e?.detail || `Server error (${res.status})`);
+let _serverAwake = false;
+let _wakeupShown = false;
+
+function showWakeupBanner() {
+  if (_wakeupShown) return;
+  _wakeupShown = true;
+  const banner = document.createElement('div');
+  banner.id = 'wakeup-banner';
+  banner.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:999;background:var(--warn);color:#fff;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;text-align:center;padding:8px;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;gap:10px`;
+  banner.innerHTML = `<span id="wakeup-spinner" style="display:inline-block;animation:spin 1s linear infinite">↻</span> Server waking up on Render free tier — please wait (up to 60s)… <span id="wakeup-elapsed">0s</span>`;
+  document.body.prepend(banner);
+  let s = 0;
+  const iv = setInterval(() => {
+    s++;
+    const el = document.getElementById('wakeup-elapsed');
+    if (el) el.textContent = s + 's';
+    if (_serverAwake) {
+      clearInterval(iv);
+      banner.style.background = 'var(--success)';
+      banner.innerHTML = '✓ Server is awake — loading data…';
+      setTimeout(() => banner.remove(), 2000);
     }
-    return res.json();
-  } catch(err) {
-    if (err.name === 'AbortError') throw new Error('Request timed out — server may be waking up');
-    if (err.name === 'TypeError')  throw new Error('Network error');
-    throw err;
+  }, 1000);
+}
+
+async function apiWithRetry(path, opts = {}, retries = 2) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 90000);
+      const res = await fetch(API + path, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', ...(opts.headers||{}) },
+        signal: controller.signal,
+        ...opts
+      });
+      clearTimeout(t);
+      _serverAwake = true;
+      if (res.status === 401) { logout(); return null; }
+      if (res.status === 204) return null;
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        const msg = Array.isArray(e?.detail) ? e.detail[0]?.msg : (e?.detail || `Server error (${res.status})`);
+        throw new Error(msg);
+      }
+      return res.json();
+    } catch(err) {
+      if (err.name === 'AbortError') {
+        if (attempt < retries) {
+          showWakeupBanner();
+          await new Promise(r => setTimeout(r, 5000));
+          continue;
+        }
+        throw new Error('Server not responding — try refreshing in a minute');
+      }
+      if (err.name === 'TypeError') {
+        if (attempt < retries) {
+          showWakeupBanner();
+          await new Promise(r => setTimeout(r, 5000));
+          continue;
+        }
+        throw new Error('Network error — check connection');
+      }
+      throw err;
+    }
   }
+}
+
+async function api(path, opts = {}) {
+  return apiWithRetry(path, opts);
 }
 
 function logout() { localStorage.clear(); window.location.href = 'login.html'; }
@@ -1198,12 +1248,49 @@ async function saveBrand() {
     color:  document.getElementById('brand-color').value.trim()||'#ef4136',
     emoji:  document.getElementById('brand-emoji').value.trim()||'🔥'
   };
-  if (!body.name) return alert('Brand name is required');
+  if (!body.name) return showFieldError('brand-name', 'Brand name is required');
+
+  // Duplicate check — aynı name veya handle varsa engelle (edit modunda kendisi hariç)
+  const nameLower   = body.name.toLowerCase();
+  const handleLower = body.handle.toLowerCase();
+  const duplicate = brands.find(b => {
+    if (id && b.id === id) return false; // edit modunda kendisini atla
+    const sameName   = b.name?.toLowerCase() === nameLower;
+    const sameHandle = body.handle && b.handle?.toLowerCase() === handleLower;
+    return sameName || sameHandle;
+  });
+  if (duplicate) {
+    const conflict = duplicate.name?.toLowerCase() === nameLower ? 'name' : 'handle';
+    return showFieldError(
+      conflict === 'name' ? 'brand-name' : 'brand-handle',
+      `"${duplicate.name}" already exists with this ${conflict}`
+    );
+  }
+
   try {
     if (id) await api(`/brands/${id}`,{method:'PATCH',body:JSON.stringify(body)});
     else    await api('/brands',{method:'POST',body:JSON.stringify(body)});
     closeModal('brand'); await loadBrands();
-  } catch(e) { alert(e.message); }
+  } catch(e) { showFieldError('brand-name', e.message); }
+}
+
+function showFieldError(fieldId, msg) {
+  // Remove existing errors
+  document.querySelectorAll('.field-error').forEach(e => e.remove());
+  document.querySelectorAll('.field-input-err').forEach(e => e.classList.remove('field-input-err'));
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  field.classList.add('field-input-err');
+  const err = document.createElement('div');
+  err.className = 'field-error';
+  err.textContent = '⚠ ' + msg;
+  field.parentNode.appendChild(err);
+  field.focus();
+  // Clear on input
+  field.addEventListener('input', () => {
+    err.remove();
+    field.classList.remove('field-input-err');
+  }, { once: true });
 }
 
 function editBrand(id) { const b=brands.find(x=>x.id===id); if(b) openModal('brand',b); }
@@ -1231,12 +1318,37 @@ async function saveInfluencer() {
     platform:  document.getElementById('inf-platform').value,
     followers: parseInt(document.getElementById('inf-followers').value)||0
   };
-  if (!body.name||!body.handle||!body.brand_id) return alert('Brand, name and handle required');
+  if (!body.brand_id) return showFieldError('inf-brand', 'Please select a brand');
+  if (!body.name)     return showFieldError('inf-name',  'Name is required');
+  if (!body.handle)   return showFieldError('inf-handle','Handle is required');
+
+  // Duplicate check — aynı handle + platform kombinasyonu tekil olmalı
+  const handleLower = body.handle.toLowerCase();
+  const duplicate = influencers.find(inf => {
+    if (id && inf.id === id) return false;
+    return inf.handle?.toLowerCase() === handleLower && inf.platform === body.platform;
+  });
+  if (duplicate) {
+    return showFieldError('inf-handle',
+      `${duplicate.handle} already exists on ${body.platform}`);
+  }
+
+  // Aynı isim + platform kombinasyonu da kontrol et
+  const nameLower = body.name.toLowerCase();
+  const dupName = influencers.find(inf => {
+    if (id && inf.id === id) return false;
+    return inf.name?.toLowerCase() === nameLower && inf.platform === body.platform;
+  });
+  if (dupName) {
+    return showFieldError('inf-name',
+      `"${dupName.name}" already exists on ${body.platform}`);
+  }
+
   try {
     if (id) await api(`/influencers/${id}`,{method:'PATCH',body:JSON.stringify(body)});
     else    await api('/influencers',{method:'POST',body:JSON.stringify(body)});
     closeModal('influencer'); await loadInfluencers();
-  } catch(e) { alert(e.message); }
+  } catch(e) { showFieldError('inf-handle', e.message); }
 }
 
 async function deleteInfluencer(id) {
