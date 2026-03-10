@@ -351,6 +351,16 @@ input.err{
 <script>
 const API = 'https://spendrics-api.onrender.com/api/v1';
 
+// ── Pre-warm: ping the server as soon as the page loads ────────
+// Render free tier sleeps after 15 min inactivity. Pinging now
+// means the server wakes while the user types — login feels instant.
+(function prewarm() {
+  const start = Date.now();
+  fetch(API + '/health', { method: 'GET', cache: 'no-store' })
+    .then(() => console.debug('[prewarm] server awake in ' + (Date.now()-start) + 'ms'))
+    .catch(() => {});
+})();
+
 // ── Password toggle ────────────────────────────────────────────
 function togglePassword() {
   const input   = document.getElementById('password');
@@ -424,8 +434,10 @@ document.getElementById('login-form').addEventListener('submit', async function(
     submitBtn.disabled     = false;
   }
 
-  const MAX_RETRIES     = 3;
-  const ATTEMPT_TIMEOUT = 30000; // 30s per attempt  (3 × 30s = 90s max)
+  const MAX_RETRIES = 3;
+  // First attempt: 65s — covers Render free-tier cold start (~60s)
+  // Retry attempts: 20s — server should already be awake by then
+  const timeoutFor = (attempt) => attempt === 1 ? 65000 : 20000;
 
   let lastErr = null;
 
@@ -441,7 +453,7 @@ document.getElementById('login-form').addEventListener('submit', async function(
 
     try {
       const controller = new AbortController();
-      const timeoutId  = setTimeout(() => controller.abort(), ATTEMPT_TIMEOUT);
+      const timeoutId  = setTimeout(() => controller.abort(), timeoutFor(attempt));
 
       const res = await fetch(API + '/auth/login', {
         method:  'POST',
