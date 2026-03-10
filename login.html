@@ -424,42 +424,71 @@ document.getElementById('login-form').addEventListener('submit', async function(
     submitBtn.disabled     = false;
   }
 
-  try {
-    // 70-second timeout (Render cold start can take ~60s)
-    const controller = new AbortController();
-    const timeoutId  = setTimeout(() => controller.abort(), 70000);
+  const MAX_RETRIES     = 3;
+  const ATTEMPT_TIMEOUT = 30000; // 30s per attempt  (3 × 30s = 90s max)
 
-    const res = await fetch(API + '/auth/login', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ email, password: pass }),
-      signal:  controller.signal,
-    });
-    clearTimeout(timeoutId);
+  let lastErr = null;
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || 'Invalid email or password.');
-
-    clearTimeout(wakeTimer);
-    localStorage.setItem('spr_token', data.access_token);
-    localStorage.setItem('spr_session', JSON.stringify({
-      id:           data.user.id,
-      display_name: data.user.display_name,
-      name:         data.user.display_name || data.user.email,
-      email:        data.user.email,
-      role:         data.user.role,
-      plan:         data.user.plan || 'free',
-    }));
-
-    window.location.href = 'dashboard.html';
-
-  } catch (err) {
-    resetBtn();
-    if (err.name === 'AbortError') {
-      showErr('Server took too long to respond. Please try again.');
-    } else {
-      showErr(err.message || 'Something went wrong. Please try again.');
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    if (attempt > 1) {
+      // Update label and pause briefly before each retry
+      clearTimeout(wakeTimer);
+      btnText.textContent   = `Retrying… (${attempt}/${MAX_RETRIES})`;
+      btnText.style.display = 'block';
+      spinEl.style.display  = 'block';
+      await new Promise(r => setTimeout(r, 1500));
     }
+
+    try {
+      const controller = new AbortController();
+      const timeoutId  = setTimeout(() => controller.abort(), ATTEMPT_TIMEOUT);
+
+      const res = await fetch(API + '/auth/login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, password: pass }),
+        signal:  controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      const data = await res.json();
+
+      // Auth / business errors → no point retrying
+      if (!res.ok) {
+        resetBtn();
+        showErr(data.detail || 'Invalid email or password.');
+        return;
+      }
+
+      // ── Success ───────────────────────────────────────────────
+      clearTimeout(wakeTimer);
+      localStorage.setItem('spr_token', data.access_token);
+      localStorage.setItem('spr_session', JSON.stringify({
+        id:           data.user.id,
+        display_name: data.user.display_name,
+        name:         data.user.display_name || data.user.email,
+        email:        data.user.email,
+        role:         data.user.role,
+        plan:         data.user.plan || 'free',
+      }));
+      window.location.href = 'dashboard.html';
+      return;
+
+    } catch (err) {
+      lastErr = err;
+      // Only retry on timeout (AbortError) or network failure (TypeError)
+      if (err.name !== 'AbortError' && !(err instanceof TypeError)) break;
+      if (attempt === MAX_RETRIES) break;
+      // loop → next attempt
+    }
+  }
+
+  // All attempts exhausted
+  resetBtn();
+  if (lastErr?.name === 'AbortError') {
+    showErr(`Server didn't respond after ${MAX_RETRIES} attempts. Please try again in a moment.`);
+  } else {
+    showErr(lastErr?.message || 'Something went wrong. Please try again.');
   }
 });
 </script>
