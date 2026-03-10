@@ -1174,7 +1174,7 @@ async function saveChannel() {
   const budget     = parseFloat(document.getElementById('ch-budget').value)||0;
   if (!campaignId) return alert('Please select a campaign');
   try {
-    await api(`/campaigns/${campaignId}/channels`, {method:'POST', body: JSON.stringify({platform, allocated_budget: budget})});
+    await api(`/channels`, {method:'POST', body: JSON.stringify({campaign_id: campaignId, platform, allocated_budget: budget})});
     closeModal('channel');
     const listEl = document.getElementById(`ch-list-${campaignId}`);
     if (listEl && listEl.style.display !== 'none') await loadChannelsForCampaign(campaignId);
